@@ -1,31 +1,31 @@
 import 'dotenv/config'
 import User from '../models/User.js'
-
-const users = [
-  {
-    username: 'admin',
-    email: 'admin@example.com',
-    password: 'password123',
-    role: 'admin'
-  },
-  {
-    username: 'user1',
-    email: 'user1@example.com',
-    password: 'password123',
-    role: 'user'
-  },
-  {
-    username: 'user2',
-    email: 'user2@example.com',
-    password: 'password123',
-    role: 'user'
-  }
-]
+import { hashPassword } from '../utils/hash-password.js'
 
 const seedUsers = async () => {
   try {
     await User.deleteMany()
     console.log('Users cleared')
+
+    const password = await hashPassword('password123')
+
+    const users = [
+      {
+        username: 'admin',
+        email: 'admin@example.com',
+        password
+      },
+      {
+        username: 'user1',
+        email: 'user1@example.com',
+        password
+      },
+      {
+        username: 'user2',
+        email: 'user2@example.com',
+        password
+      }
+    ]
 
     await User.insertMany(users)
     console.log('Users added')

@@ -1,25 +1,39 @@
 import User from '../models/User.js'
 
-const findByEmail = async (email) => {
+async function createUser(data) {
+  return await User.create(data)
+}
+
+async function findUserByEmail(email) {
   return await User.findOne({ email })
 }
 
-const create = async (userData) => {
-  const user = new User(userData)
-  return await user.save()
+async function findUserByUsername(username) {
+  return await User.findOne({ username })
 }
 
-const findAll = async () => {
-  return await User.find({})
+async function findAllUsers() {
+  return await User.find()
 }
 
-const findById = async (id) => {
+async function findUserById(id) {
   return await User.findById(id)
 }
 
-export default {
-  findByEmail,
-  create,
-  findAll,
-  findById
+async function updateUser(id, data) {
+  return await User.findByIdAndUpdate(id, data, { new: true })
+}
+
+async function deleteUser(id) {
+  return await User.findByIdAndDelete(id)
+}
+
+export {
+  findUserByEmail,
+  findUserByUsername,
+  createUser,
+  findAllUsers,
+  findUserById,
+  updateUser,
+  deleteUser
 }
