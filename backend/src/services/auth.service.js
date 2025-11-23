@@ -78,9 +78,9 @@ async function signup({
   }
 }
 
-async function signin({ username, password, deviceInfo }) {
+async function signin({ email, password, deviceInfo }) {
   try {
-    const user = await userRepo.findUserByUsername(username)
+    const user = await userRepo.findUserByEmail(email)
     if (!user) {
       throw new ApiError('Invalid credentials', 401, 'INVALID_CREDENTIALS')
     }
