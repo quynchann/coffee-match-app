@@ -32,6 +32,67 @@ async function getProfile(req, res) {
 async function updateProfile(req, res) {
   const userId = req.user.id;
   const profileData = req.body;
+  const { email, address, age, styles } = profileData;
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "メールアドレスは必須です。", // Email bắt buộc
+    });
+  }
+  if (typeof email !== "string" || !/^\S+@\S+\.\S+$/.test(email)) {
+    return res.status(400).json({
+      success: false,
+      message: "メールアドレスの形式が正しくありません。", // Email không hợp lệ
+    });
+  }
+
+  if (!address) {
+    return res.status(400).json({
+      success: false,
+      message: "住所は必須です。", // Address bắt buộc
+    });
+  }
+  if (typeof address !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "住所の形式が正しくありません。", // Address không hợp lệ
+    });
+  }
+
+  if (age === undefined || age === null) {
+    return res.status(400).json({
+      success: false,
+      message: "年齢は必須です。", // Age bắt buộc
+    });
+  }
+  if (typeof +age !== "number" || +age <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "年齢は正しい数値で入力してください。", // Age không hợp lệ
+    });
+  }
+
+  if (!styles) {
+    return res.status(400).json({
+      success: false,
+      message: "スタイルは必須です。", // Styles bắt buộc
+    });
+  }
+  if (!Array.isArray(styles)) {
+    return res.status(400).json({
+      success: false,
+      message: "スタイルは配列である必要があります。", // Styles không hợp lệ
+    });
+  }
+  for (const style of styles) {
+    if (typeof style !== "string" || !style.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "スタイルの値が不正です。", // Style không hợp lệ
+      });
+    }
+  }
 
   let avatarPath = null;
   if (req.file) {

@@ -12,7 +12,6 @@ profileRouter.get("/", profileController.getProfile);
 profileRouter.put(
   "/",
   uploadAvatar.single("avatar"),
-  validateBody(profile),
   profileController.updateProfile
 );
 profileRouter.post("/change-password", profileController.changePassword);

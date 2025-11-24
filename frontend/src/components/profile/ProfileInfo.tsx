@@ -77,8 +77,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
               variant="outline"
               size="sm"
               className="mt-2"
-              onClick={() => fileInputRef.current?.click()}
-            >
+              onClick={() => fileInputRef.current?.click()}>
               変更
             </Button>
           </div>
@@ -88,7 +87,6 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
       <h2 className="text-lg md:text-xl font-semibold">{fullname}</h2>
 
       <div className="w-full space-y-3">
-        {/* ... Các Input khác giữ nguyên ... */}
         <div>
           <label className="text-sm">メール</label>
           <Input
@@ -123,8 +121,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
       <Button
         variant="profile"
         className="w-full mt-4 cursor-pointer"
-        onClick={() => setIsOpenChangePassword(true)}
-      >
+        onClick={() => setIsOpenChangePassword(true)}>
         パスワード変更
       </Button>
     </Card>

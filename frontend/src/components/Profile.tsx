@@ -76,31 +76,40 @@ export default function ProfilePage() {
   }
 
   const handleSave = async () => {
-    const formData = new FormData()
-
-    formData.append('email', email)
-    formData.append('address', address)
-    formData.append('age', age.toString())
-    selected.forEach((style) => formData.append('styles', style))
-
-    if (newAvatarFile) {
-      formData.append('avatar', newAvatarFile)
-    }
-
     try {
+      const formData = new FormData()
+      formData.append('email', email)
+      formData.append('address', address)
+      formData.append('age', age.toString())
+      selected.forEach((style) => formData.append('styles', style))
+
+      if (newAvatarFile) {
+        formData.append('avatar', newAvatarFile)
+      }
+
       const res = await updateProfile(formData)
+      console.log('res', res)
 
-      toast.success('正常に編集されました', {
-        description: res.data.message,
-      })
-
-      setIsEditing(false)
-    } catch (error: any) {
+      if (res.data.success) {
+        toast.success('正常に編集されました', {
+          description: res.data.message,
+        })
+        setIsEditing(false)
+      } else {
+        toast.error('エラーが発生しました', {
+          description:
+            res.data.message || res.data.error || '不明なエラーです。',
+        })
+      }
+    } catch (err: any) {
+      console.error('Error updating profile:', err)
       toast.error('エラーが発生しました', {
-        description: error?.response?.data?.message ?? '不明なエラーです。',
+        description:
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          '不明なエラーです。',
       })
     }
-    fetchData()
   }
 
   const handleChangePassword = async (
@@ -115,12 +124,17 @@ export default function ProfilePage() {
         confirmPassword,
       )
 
-      toast.success('パスワードが変更されました！') // Mật khẩu đã được thay đổi!
-      setIsOpenChangePassword(false)
-    } catch (error: any) {
-      toast.error('エラーが発生しました！', {
-        description: error?.response?.data?.message ?? '不明なエラーです。',
-      })
+      if (res.data.success) {
+        toast.success('パスワードが変更されました！')
+        setIsOpenChangePassword(false)
+      } else {
+        toast.error(res.data.message || 'エラーが発生しました！')
+      }
+    } catch (err: any) {
+      console.log('error', err.response?.data || err)
+      toast.error(
+        err.response?.data?.message || 'サーバーエラーが発生しました！',
+      )
     }
   }
 
@@ -168,7 +182,6 @@ export default function ProfilePage() {
             <div className="flex gap-2">
               <Button
                 onClick={() => {
-                  setIsEditing(false)
                   handleSave()
                 }}
                 className="cursor-pointer"
