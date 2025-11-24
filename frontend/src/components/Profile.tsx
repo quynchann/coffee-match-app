@@ -161,8 +161,7 @@ export default function ProfilePage() {
             <Button
               onClick={() => setIsEditing(true)}
               variant="profile"
-              className="cursor-pointer"
-            >
+              className="cursor-pointer">
               編集
             </Button>
           ) : (
@@ -173,7 +172,7 @@ export default function ProfilePage() {
                   handleSave()
                 }}
                 className="cursor-pointer"
-              >
+                variant="primary">
                 保存
               </Button>
               <Button
@@ -182,8 +181,7 @@ export default function ProfilePage() {
                   fetchData()
                 }}
                 className="cursor-pointer"
-                variant="profile"
-              >
+                variant="profile">
                 キャンセル
               </Button>
             </div>
