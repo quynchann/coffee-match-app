@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getProfile, updatePassword, updateProfile } from '@/services/api'
 import { toast } from 'sonner'
 import ProfileInfo from './profile/ProfileInfo'
 import StyleSelector from './profile/StyleSelector'
 import { Button } from './ui/button'
 import { ModalChangePassword } from './profile/ModalChangePassword'
+import { getProfile, updatePassword, updateProfile } from '@/services/api'
 
 export default function ProfilePage() {
   const baseURLImage = `${import.meta.env.VITE_BASE_URL_BACKEND}/images/avatar`
@@ -12,9 +12,9 @@ export default function ProfilePage() {
 
   const [email, setEmail] = useState<string>('')
   const [address, setAddress] = useState<string>('')
-  const [age, setAge] = useState<number>(0)
+  const [age, setAge] = useState<number | string>('')
 
-  const [styles, setStyles] = useState<string[]>([
+  const [styles] = useState<Array<string>>([
     '勉強',
     'デート',
     '子供向け',
@@ -41,7 +41,7 @@ export default function ProfilePage() {
     '落ち着いた2',
   ])
 
-  const [selected, setSelected] = useState<string[]>([])
+  const [selected, setSelected] = useState<Array<string>>([])
   const [isEditing, setIsEditing] = useState(false)
   const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null) // State mới cho tệp
   const [isOpenChangePassword, setIsOpenChangePassword] =
@@ -50,15 +50,17 @@ export default function ProfilePage() {
   const fetchData = async () => {
     const res = await getProfile()
     try {
-      if (res.data?.data) {
+      if (res.data.data) {
         const profile = res.data.data
         setProfileUser(profile)
 
         // Set tất cả state từ backend
         setEmail(profile.email)
         setAddress(profile.address)
-        setAge(profile.age)
-        setSelected(profile.styles || [])
+        if (profile.age) {
+          setAge(profile.age)
+        }
+        setSelected(profile.styles)
       }
     } catch (err: any) {
       console.error('Error fetching profile:', res.data.message)

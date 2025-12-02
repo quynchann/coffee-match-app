@@ -8,7 +8,7 @@ type ProfileInfoProps = {
   fullname: string
   email: string
   address: string
-  age: number
+  age: number | string
   setEmail: (email: string) => void
   setAddress: (address: string) => void
   setAge: (age: number) => void
@@ -110,7 +110,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
         <div>
           <label className="text-sm">年齢</label>
           <Input
-            value={age?.toString() || ''}
+            value={age.toString()}
             readOnly={!isEditing}
             className="mt-1"
             type="number"

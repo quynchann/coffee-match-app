@@ -2,7 +2,7 @@ export { };
 
 declare global {
     interface IBackendRes<T> {
-        error?: string | string[];
+        error?: string | Array<string>;
         message: string;
         success: boolean;
         data?: T;
@@ -13,7 +13,7 @@ declare global {
         id: string,
         username: string,
         email: string,
-        styles: string[],
+        styles: Array<string>,
         address: string,
         age: number,
         avatar: string,

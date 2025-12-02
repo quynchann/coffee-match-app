@@ -54,15 +54,15 @@ async function updateProfile(req, res) {
     });
   }
 
-  if (
-    (age === undefined && typeof +age !== "number") ||
-    +age < 10 ||
-    +age > 100
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: "年齢は正しい数値で入力してください。", // Age không hợp lệ
-    });
+  if (age !== undefined && age !== "") {
+    const ageNum = Number(age);
+
+    if (!Number.isFinite(ageNum) || ageNum < 10 || ageNum > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "年齢は正しい数値で入力してください。",
+      });
+    }
   }
 
   let avatarPath = null;
