@@ -1,22 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
   Search,
-  Home,
   Bookmark,
-  User,
-  ChevronDown,
-  ChevronUp,
   Star,
-  Instagram,
-  Facebook,
-  Twitter,
   Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Check,
 } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 
-// --- Interfaces & Types ---
+import cafeDataRaw from '@/data/cafes.json'
+
+// --- Interfaces ---
+export interface Cafe {
+  id: number
+  name: string
+  rating: number
+  hours: string
+  address: string
+  area: string
+  purpose: string
+  description?: string
+  phone?: string
+  priceRange?: string
+  amenities?: string[]
+  features?: string[]
+  images?: string[]
+}
 
 interface Area {
   id: string
@@ -30,190 +43,28 @@ interface Purpose {
   jpLabel: string
 }
 
-interface Cafe {
-  id: number
-  name: string
-  rating: number
-  hours: string
-  address: string
-  area: string
-  purpose: string
-}
-
 interface Filters {
   area: string | null
   purpose: string | null
 }
 
-// --- Constants & Mock Data ---
-
-const AREAS: Area[] = [
+const AREAS = [
   { id: 'hbt', label: 'Hai Ba Trung', jpLabel: 'ハイバーチュン区' },
   { id: 'hk', label: 'Hoan Kiem', jpLabel: 'ホアンキエム区' },
   { id: 'cg', label: 'Cau Giay', jpLabel: 'カウザイ区' },
   { id: 'bd', label: 'Ba Dinh', jpLabel: 'バーディン区' },
 ]
 
-const PURPOSES: Purpose[] = [
+const PURPOSES = [
   { id: 'study', label: 'Hoc tap', jpLabel: '勉強' },
   { id: 'work', label: 'Cong viec', jpLabel: '仕事' },
   { id: 'date', label: 'Hen ho', jpLabel: 'デート' },
   { id: 'relax', label: 'Thu gian', jpLabel: 'リラックス' },
 ]
 
-const MOCK_DATA: Cafe[] = [
-  {
-    id: 1,
-    name: 'Highlands Coffee',
-    rating: 4.5,
-    hours: '7:00 ~ 23:00',
-    address: '16 Le Thanh Nghi',
-    area: 'hbt',
-    purpose: 'study',
-  },
-  {
-    id: 2,
-    name: 'The Coffee House',
-    rating: 4.8,
-    hours: '8:00 ~ 22:30',
-    address: '23 Ba Trieu',
-    area: 'hk',
-    purpose: 'work',
-  },
-  {
-    id: 3,
-    name: 'Starbucks Indochina',
-    rating: 4.9,
-    hours: '7:30 ~ 22:00',
-    address: '241 Xuan Thuy',
-    area: 'cg',
-    purpose: 'work',
-  },
-  {
-    id: 4,
-    name: 'All Day Coffee',
-    rating: 4.6,
-    hours: '8:00 ~ 23:00',
-    address: '37 Quang Trung',
-    area: 'hk',
-    purpose: 'date',
-  },
-  {
-    id: 5,
-    name: 'Tranquil Books',
-    rating: 5.0,
-    hours: '8:00 ~ 22:00',
-    address: '5 Nguyen Quang Bich',
-    area: 'hk',
-    purpose: 'study',
-  },
-  {
-    id: 6,
-    name: 'Cộng Cà Phê',
-    rating: 4.4,
-    hours: '7:00 ~ 23:30',
-    address: '116 Cau Go',
-    area: 'hk',
-    purpose: 'relax',
-  },
-  {
-    id: 7,
-    name: 'Là Việt Coffee',
-    rating: 4.7,
-    hours: '7:00 ~ 22:00',
-    address: '3 Ngo Quyen',
-    area: 'hk',
-    purpose: 'work',
-  },
-  {
-    id: 8,
-    name: 'Phúc Long',
-    rating: 4.2,
-    hours: '8:00 ~ 22:00',
-    address: '82 Hang Dieu',
-    area: 'hk',
-    purpose: 'relax',
-  },
-  {
-    id: 9,
-    name: 'Maison de Blanc',
-    rating: 4.8,
-    hours: '9:00 ~ 21:00',
-    address: '5 Tay Ho',
-    area: 'bd',
-    purpose: 'date',
-  },
-  {
-    id: 10,
-    name: 'Twitter Beans',
-    rating: 4.3,
-    hours: '7:00 ~ 22:00',
-    address: '56 Vu Trong Phung',
-    area: 'cg',
-    purpose: 'study',
-  },
-  {
-    id: 11,
-    name: 'Kafa Café',
-    rating: 4.1,
-    hours: '7:00 ~ 23:00',
-    address: '101 Ba Trieu',
-    area: 'hbt',
-    purpose: 'relax',
-  },
-]
+const CAFES_DATA: Cafe[] = cafeDataRaw as Cafe[]
 
 // --- Components ---
-
-const Header: React.FC = () => {
-  return (
-    <header className="bg-[#F26546] text-white py-3 px-6 shadow-md sticky top-0 z-50 w-full">
-      {/* Thay đổi: Loại bỏ max-w-7xl, thay bằng w-full và padding rộng hơn */}
-      <div className="w-full px-4 md:px-8 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-6">
-          <div className="text-2xl font-bold tracking-wider">Logo</div>
-          <div className="flex flex-col items-center cursor-pointer hover:opacity-90">
-            <Home size={24} />
-            <span className="text-xs font-bold mt-0.5">ホーム</span>
-          </div>
-        </div>
-
-        <div className="flex-1 max-w-2xl relative hidden md:block">
-          <input
-            type="text"
-            placeholder="何をお探しですか？"
-            className="w-full py-2 pl-4 pr-10 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-300"
-          />
-          <Search
-            className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
-            size={20}
-          />
-        </div>
-        <div className="md:hidden text-white">
-          <Search size={24} />
-        </div>
-
-        <div className="flex items-center gap-6">
-          <div className="flex flex-col items-center cursor-pointer hover:opacity-90">
-            <Bookmark size={24} />
-            <span className="text-xs font-bold mt-0.5 hidden sm:inline">
-              保存済み
-            </span>
-          </div>
-          <div className="flex flex-col items-center cursor-pointer hover:opacity-90">
-            <User size={24} />
-            <span className="text-xs font-bold mt-0.5 hidden sm:inline">
-              ユーザー名
-            </span>
-          </div>
-          <button className="border border-white px-4 py-1 rounded hover:bg-white hover:text-[#F26546] transition text-sm font-bold whitespace-nowrap">
-            ログイン
-          </button>
-        </div>
-      </div>
-    </header>
-  )
-}
 
 interface FilterDropdownProps {
   title: string
@@ -270,7 +121,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
               setIsOpen(false)
             }}
             className="w-full text-left px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 border-b border-gray-100 font-medium">
-            -- Tất cả / Hủy lọc --
+            -- すべて / リセット --
           </button>
 
           {options.map((opt) => (
@@ -311,7 +162,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     'w-full bg-[#444444] text-white py-2.5 px-4 rounded mb-3 text-sm font-bold hover:bg-[#555] transition flex items-center justify-center gap-2'
 
   return (
-    <aside className="w-full md:w-64 flex-shrink-0 space-y-6 md:sticky md:top-24 h-fit">
+    <aside className="w-full md:w-64 shrink-0 space-y-6 md:sticky md:top-24 h-fit">
       <FilterDropdown
         title="場所"
         placeholder="場所"
@@ -371,21 +222,36 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   )
 }
 
-interface CafeCardProps {
-  data: Cafe
-}
-
-const CafeCard: React.FC<CafeCardProps> = ({ data }) => {
+const CafeCard: React.FC<{ data: Cafe }> = ({ data }) => {
+  const navigate = useNavigate()
   const areaInfo = AREAS.find((a) => a.id === data.area)
   const purposeInfo = PURPOSES.find((p) => p.id === data.purpose)
 
+  const displayImage =
+    data.images && data.images.length > 0 ? data.images[0] : null
+
+  const handleClick = () => {
+    navigate({ to: '/detail', search: { id: data.id } })
+  }
+
   return (
-    <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition group h-full flex flex-col">
-      <div className="h-40 bg-gray-200 relative flex items-center justify-center overflow-hidden flex-shrink-0">
-        <ImageIcon
-          size={48}
-          className="text-gray-400 group-hover:scale-110 transition duration-500"
-        />
+    <div
+      onClick={handleClick}
+      className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition group h-full flex flex-col cursor-pointer">
+      <div className="h-40 bg-gray-200 relative flex items-center justify-center overflow-hidden shrink-0">
+        {displayImage ? (
+          <img
+            src={displayImage}
+            alt={data.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+          />
+        ) : (
+          <ImageIcon
+            size={48}
+            className="text-gray-400 group-hover:scale-110 transition duration-500"
+          />
+        )}
+
         <div className="absolute top-2 right-2 text-[#F26546] bg-white rounded-full p-1 shadow-sm">
           <Bookmark size={16} fill="#F26546" />
         </div>
@@ -454,6 +320,8 @@ interface MainContentProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>
   cafes: Cafe[]
   totalItems: number
+  sortBy: 'default' | 'distance' | 'rating'
+  onSortChange: (sort: 'default' | 'distance' | 'rating') => void
 }
 
 const MainContent: React.FC<MainContentProps> = ({
@@ -461,8 +329,10 @@ const MainContent: React.FC<MainContentProps> = ({
   setCurrentPage,
   cafes,
   totalItems,
+  sortBy,
+  onSortChange,
 }) => {
-  const ITEMS_PER_PAGE = 6
+  const ITEMS_PER_PAGE = 10
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1
 
   const handlePrev = () => {
@@ -489,10 +359,22 @@ const MainContent: React.FC<MainContentProps> = ({
       <div className="bg-[#D9D9D9] p-3 rounded mb-6 flex flex-col sm:flex-row items-center justify-between sm:justify-start gap-4 sm:gap-0">
         <span className="font-bold text-gray-700 mr-6 text-lg">並び替え</span>
         <div className="flex gap-4 sm:gap-8 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none bg-[#444] text-white px-8 py-1.5 rounded text-sm font-bold hover:bg-[#555] transition">
+          <button
+            onClick={() => onSortChange('distance')}
+            className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
+              sortBy === 'distance'
+                ? 'bg-[#F26546] text-white'
+                : 'bg-[#444] text-white hover:bg-[#555]'
+            }`}>
             距離
           </button>
-          <button className="flex-1 sm:flex-none bg-[#444] text-white px-8 py-1.5 rounded text-sm font-bold hover:bg-[#555] transition">
+          <button
+            onClick={() => onSortChange('rating')}
+            className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
+              sortBy === 'rating'
+                ? 'bg-[#F26546] text-white'
+                : 'bg-[#444] text-white hover:bg-[#555]'
+            }`}>
             評価
           </button>
         </div>
@@ -500,7 +382,6 @@ const MainContent: React.FC<MainContentProps> = ({
 
       {cafes.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-          {/* Cập nhật Grid để tận dụng full màn hình: thêm lg:grid-cols-4 xl:grid-cols-5 */}
           {cafes.map((item) => (
             <CafeCard key={item.id} data={item} />
           ))}
@@ -509,9 +390,11 @@ const MainContent: React.FC<MainContentProps> = ({
         <div className="flex flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
           <Search size={48} className="mb-4 text-gray-300" />
           <p className="text-lg font-bold">
-            Không tìm thấy quán cafe nào phù hợp
+            適切なカフェが見つかりませんでした。
           </p>
-          <p className="text-sm">Vui lòng thử thay đổi bộ lọc</p>
+          <p className="text-sm">
+            フィルターやキーワードを変更してお試しください。
+          </p>
         </div>
       )}
 
@@ -545,49 +428,57 @@ const MainContent: React.FC<MainContentProps> = ({
   )
 }
 
-const Footer: React.FC = () => {
-  return (
-    <footer className="bg-[#F26546] text-white py-4 mt-auto relative z-10 w-full">
-      {/* Thay đổi: Loại bỏ max-w-7xl, dùng w-full và padding rộng hơn */}
-      <div className="w-full px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-xl font-bold border-2 border-white px-2 py-0.5">
-          ロゴ
-        </div>
-
-        <div className="text-xs">
-          © 2025 Your Website. All rights reserved.
-        </div>
-
-        <div className="flex gap-4">
-          <Instagram size={20} className="cursor-pointer hover:text-gray-200" />
-          <Facebook size={20} className="cursor-pointer hover:text-gray-200" />
-          <Twitter size={20} className="cursor-pointer hover:text-gray-200" />
-        </div>
-      </div>
-    </footer>
-  )
+interface SearchPageProps {
+  initialKeyword?: string
 }
 
-const App: React.FC = () => {
+const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [filters, setFilters] = useState<Filters>({ area: null, purpose: null })
+  const [sortBy, setSortBy] = useState<'default' | 'distance' | 'rating'>(
+    'default',
+  )
 
-  const filteredData = MOCK_DATA.filter((item) => {
+  // Logic lọc dữ liệu tổng hợp (Filter + Keyword)
+  const filteredData = CAFES_DATA.filter((item) => {
+    // 1. Lọc theo Keyword
+    const normalizedKeyword = initialKeyword.toLowerCase().trim()
+    const matchSearch =
+      !normalizedKeyword ||
+      item.name.toLowerCase().includes(normalizedKeyword) ||
+      item.address.toLowerCase().includes(normalizedKeyword)
+
+    // 2. Lọc theo Dropdown
     const matchArea = filters.area ? item.area === filters.area : true
     const matchPurpose = filters.purpose
       ? item.purpose === filters.purpose
       : true
-    return matchArea && matchPurpose
+
+    return matchSearch && matchArea && matchPurpose
   })
 
+  // Sort dữ liệu theo rating (từ cao đến thấp)
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortBy === 'rating') {
+      return b.rating - a.rating // Sắp xếp từ cao đến thấp
+    }
+    // Có thể thêm logic sort theo distance sau
+    return 0 // Giữ nguyên thứ tự mặc định
+  })
+
+  // Reset về trang 1 khi filter hoặc sort thay đổi
   useEffect(() => {
     setCurrentPage(1)
-  }, [filters])
+  }, [filters, initialKeyword, sortBy])
 
-  const ITEMS_PER_PAGE = 10 // Tăng số lượng item mỗi trang lên để lấp đầy màn hình lớn
+  const ITEMS_PER_PAGE = 10
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem)
+
+  const handleSortChange = (sort: 'default' | 'distance' | 'rating') => {
+    setSortBy(sort)
+  }
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col font-sans w-full">
@@ -597,7 +488,9 @@ const App: React.FC = () => {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           cafes={currentItems}
-          totalItems={filteredData.length}
+          totalItems={sortedData.length}
+          sortBy={sortBy}
+          onSortChange={handleSortChange}
         />
       </div>
     </div>
