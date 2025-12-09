@@ -28,6 +28,8 @@ export interface Cafe {
   amenities?: string[]
   features?: string[]
   images?: string[]
+  lat?: number
+  lng?: number
 }
 
 interface Area {
@@ -277,10 +279,51 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   )
 }
 
-const CafeCard: React.FC<{ data: Cafe }> = ({ data }) => {
+const CafeCard: React.FC<{
+  data: Cafe
+  userLocation: { lat: number; lng: number } | null
+  showDistance: boolean
+}> = ({ data, userLocation, showDistance }) => {
   const navigate = useNavigate()
   const areaInfo = AREAS.find((a) => a.id === data.area)
   const purposeInfo = PURPOSES.find((p) => p.id === data.purpose)
+
+  // Calculate distance
+  const calculateDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number => {
+    const R = 6371 // Earth radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180
+    const dLon = ((lon2 - lon1) * Math.PI) / 180
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
+  }
+
+  const distance =
+    userLocation && data.lat && data.lng
+      ? calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          data.lat,
+          data.lng,
+        )
+      : null
+
+  const formatDistance = (distKm: number): string => {
+    if (distKm < 1) {
+      return `${Math.round(distKm * 1000)}m`
+    }
+    return `${distKm.toFixed(1)}km`
+  }
 
   const displayImage =
     data.images && data.images.length > 0 ? data.images[0] : null
@@ -337,6 +380,11 @@ const CafeCard: React.FC<{ data: Cafe }> = ({ data }) => {
           <p className="font-semibold text-gray-500 text-left">
             {areaInfo ? `${areaInfo.jpLabel} (${areaInfo.label})` : 'Hanoi'}
           </p>
+          {showDistance && distance !== null && (
+            <p className="text-left font-bold text-[#F26546]">
+              距離: {formatDistance(distance)}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -377,6 +425,8 @@ interface MainContentProps {
   totalItems: number
   sortBy: 'default' | 'distance' | 'rating'
   onSortChange: (sort: 'default' | 'distance' | 'rating') => void
+  userLocation: { lat: number; lng: number } | null
+  showDistance: boolean
 }
 
 const MainContent: React.FC<MainContentProps> = ({
@@ -386,6 +436,8 @@ const MainContent: React.FC<MainContentProps> = ({
   totalItems,
   sortBy,
   onSortChange,
+  userLocation,
+  showDistance,
 }) => {
   const ITEMS_PER_PAGE = 10
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1
@@ -438,7 +490,12 @@ const MainContent: React.FC<MainContentProps> = ({
       {cafes.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
           {cafes.map((item) => (
-            <CafeCard key={item.id} data={item} />
+            <CafeCard
+              key={item.id}
+              data={item}
+              userLocation={userLocation}
+              showDistance={showDistance}
+            />
           ))}
         </div>
       ) : (
@@ -503,18 +560,42 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
     min: '',
     max: '',
   })
+  const [priceApplied, setPriceApplied] = useState<boolean>(false)
+  const [userLocation, setUserLocation] = useState<{
+    lat: number
+    lng: number
+  } | null>(null)
 
   const parsePriceInput = (value: string) => {
     const numeric = parseInt(value.replace(/[^0-9]/g, ''), 10)
     return Number.isFinite(numeric) ? numeric : null
   }
 
-  const [priceApplied, setPriceApplied] = useState<boolean>(false)
   const handleApplyPrice = () => {
     const minValue = parsePriceInput(priceInputs.min)
     const maxValue = parsePriceInput(priceInputs.max)
     setFilters((prev) => ({ ...prev, priceMin: minValue, priceMax: maxValue }))
     setPriceApplied(true)
+  }
+
+  // Calculate distance using Haversine formula
+  const calculateDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number => {
+    const R = 6371 // Earth radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180
+    const dLon = ((lon2 - lon1) * Math.PI) / 180
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
   }
   // Logic lọc dữ liệu tổng hợp (Filter + Keyword)
   const filteredData = CAFES_DATA.filter((item) => {
@@ -563,13 +644,23 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
     )
   })
 
-  // Sort dữ liệu theo rating (từ cao đến thấp)
+  // Sort dữ liệu theo rating hoặc distance
   const sortedData = [...filteredData].sort((a, b) => {
-    if (sortBy === 'rating') {
-      return b.rating - a.rating // Sắp xếp từ cao đến thấp
+    if (sortBy === 'distance' && userLocation) {
+      const distA =
+        a.lat && a.lng
+          ? calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)
+          : Infinity
+      const distB =
+        b.lat && b.lng
+          ? calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng)
+          : Infinity
+      return distA - distB
     }
-    // Có thể thêm logic sort theo distance sau
-    return 0 // Giữ nguyên thứ tự mặc định
+    if (sortBy === 'rating') {
+      return b.rating - a.rating
+    }
+    return 0
   })
 
   // Reset về trang 1 khi filter hoặc sort thay đổi
@@ -584,6 +675,27 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
 
   const handleSortChange = (sort: 'default' | 'distance' | 'rating') => {
     setSortBy(sort)
+
+    // Get user location when distance sort is selected
+    if (sort === 'distance' && !userLocation) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setUserLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            })
+          },
+          (error) => {
+            console.error('Error getting location:', error)
+            // Fallback to Hanoi center
+            setUserLocation({ lat: 21.0285, lng: 105.8542 })
+          },
+        )
+      } else {
+        setUserLocation({ lat: 21.0285, lng: 105.8542 })
+      }
+    }
   }
 
   return (
@@ -605,6 +717,8 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
           totalItems={sortedData.length}
           sortBy={sortBy}
           onSortChange={handleSortChange}
+          userLocation={userLocation}
+          showDistance={sortBy === 'distance'}
         />
       </div>
     </div>
