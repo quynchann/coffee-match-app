@@ -1,10 +1,22 @@
-import { Bookmark, Camera, Check, ChevronLeft, ChevronRight, Clock, Coffee, ImageIcon, MapPin, Phone, Share2, Star } from "lucide-react"
-import { useEffect, useState } from "react"
-import SectionCard from "./SectionCard"
-import FeatureItem from "./FeatureItem"
-import ReviewForm from "./ReviewForm"
-import type { Cafe } from "@/types/cafe"
-
+import {
+  Bookmark,
+  Camera,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Coffee,
+  ImageIcon,
+  MapPin,
+  Phone,
+  Share2,
+  Star,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import SectionCard from './SectionCard'
+import FeatureItem from './FeatureItem'
+import ReviewForm from './ReviewForm'
+import type { Cafe } from '@/types/cafe'
 
 const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)

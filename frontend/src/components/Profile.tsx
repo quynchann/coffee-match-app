@@ -142,10 +142,10 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-3 md:gap-6 space-y-6 p-6 w-full min-h-[calc(100vh-160px)]">
+      <div className="grid min-h-[calc(100vh-160px)] w-full grid-cols-1 space-y-6 p-6 md:grid-cols-3 md:gap-6">
         <div className="col-span-1">
           <ProfileInfo
-            fullname={profileUser?.name ?? ''}
+            name={profileUser?.name ?? ''}
             email={email}
             address={address}
             age={age}
@@ -172,7 +172,7 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className="w-full flex justify-center md:col-span-3">
+        <div className="flex w-full justify-center md:col-span-3">
           {!isEditing ? (
             <Button
               onClick={() => setIsEditing(true)}
@@ -195,8 +195,7 @@ export default function ProfilePage() {
                   setIsEditing(false)
                   fetchData()
                 }}
-                className="cursor-pointer"
-                >
+                className="cursor-pointer">
                 キャンセル
               </Button>
             </div>

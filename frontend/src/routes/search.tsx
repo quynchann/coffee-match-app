@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { z } from 'zod'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import SearchPage from '@/components/SearchPage'
-import { z } from 'zod'
 
 // Định nghĩa Schema cho Search Params
 const searchSchema = z.object({

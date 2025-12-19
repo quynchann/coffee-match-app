@@ -18,7 +18,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
     <>
       {field.state.meta.isTouched && field.state.meta.errors.length ? (
-        <p className="text-xs text-destructive">
+        <p className="text-destructive text-xs">
           {field.state.meta.errors[0]?.message}
         </p>
       ) : null}

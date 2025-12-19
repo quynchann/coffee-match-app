@@ -1,4 +1,4 @@
-import { Car, Check, Coffee, Dog, Volume2, Wifi } from "lucide-react"
+import { Car, Check, Coffee, Dog, Volume2, Wifi } from 'lucide-react'
 
 const FeatureItem: React.FC<{ text: string }> = ({ text }) => {
   let Icon = Check
@@ -10,7 +10,7 @@ const FeatureItem: React.FC<{ text: string }> = ({ text }) => {
 
   return (
     <li className="flex items-center gap-3 p-3 rounded-lg bg-orange-50/50 border border-orange-100/50 hover:bg-orange-50 transition-colors">
-      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-[#F26546] border border-orange-100 flex-shrink-0">
+      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-[#F26546] border border-orange-100 shrink-0">
         <Icon size={16} />
       </div>
       <span className="text-sm font-medium text-gray-700">{text}</span>
