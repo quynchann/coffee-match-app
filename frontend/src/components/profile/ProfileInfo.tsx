@@ -119,7 +119,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
         </div>
       </div>
       <Button
-        variant="profile"
+        variant="primary"
         className="w-full mt-4 cursor-pointer"
         onClick={() => setIsOpenChangePassword(true)}>
         パスワード変更

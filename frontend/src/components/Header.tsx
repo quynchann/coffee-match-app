@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { CheckCircle2, Search, User, X, MapPin } from 'lucide-react'
+import { CheckCircle2, MapPin, Search, User, X } from 'lucide-react'
 import { useAuthStore } from '../stores/useAuthStore'
 import {
   DropdownMenu,
@@ -9,7 +10,6 @@ import {
 } from './ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import logo from '/logo.png'
-import { useState, useEffect, useRef } from 'react'
 
 // Import data để gợi ý (Autocomplete)
 import cafeDataRaw from '@/data/cafes.json'
@@ -21,7 +21,7 @@ interface CafeSimple {
   address: string
 }
 
-const CAFES_DATA: CafeSimple[] = cafeDataRaw as CafeSimple[]
+const CAFES_DATA: Array<CafeSimple> = cafeDataRaw as Array<CafeSimple>
 
 export default function Header({
   isAuthenticated = false,
@@ -33,7 +33,7 @@ export default function Header({
 
   // --- Search Logic State ---
   const [inputValue, setInputValue] = useState('')
-  const [suggestions, setSuggestions] = useState<CafeSimple[]>([])
+  const [suggestions, setSuggestions] = useState<Array<CafeSimple>>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
 

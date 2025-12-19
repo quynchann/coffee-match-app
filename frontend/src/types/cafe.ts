@@ -20,15 +20,19 @@ export interface Cafe {
   purpose: string
   description?: string
   phone?: string
-  features?: string[]
-  images?: string[]
-  menu?: { name: string; price: string; image?: string }[]
-  reviews?: {
+  features?: Array<string>
+  images?: Array<string>
+  menu?: Array<{ name: string; price: string; image?: string }>
+  reviews?: Array<{
     id: number
     user: string
     date: string
     rating: number
     content: string
     image?: string
-  }[]
+  }>
+  lat?: number
+  lng?: number
+  amenities?: Array<string>
+  priceRange?: string
 }

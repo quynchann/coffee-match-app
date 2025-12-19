@@ -1,3 +1,4 @@
+import { useState } from 'react' // Thêm type FormEvent
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,9 +10,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { updatePassword } from '@/services/api' // Giả định hàm này chấp nhận kiểu T
-import { useState, type FormEvent } from 'react' // Thêm type FormEvent
-import { toast } from 'sonner'
 
 // Định nghĩa kiểu cho Props
 interface ModalChangePasswordProps {
@@ -29,7 +27,6 @@ export function ModalChangePassword({
   handleClosePassword,
   handleChangePassword,
 }: ModalChangePasswordProps) {
-  // Định nghĩa kiểu trả về
   const [currentPassword, setCurrentPassword] = useState<string>('') // Định nghĩa kiểu string
   const [newPassword, setNewPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')

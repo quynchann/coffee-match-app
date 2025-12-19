@@ -1,10 +1,9 @@
-import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import StyleTag from './StyleTag'
 
 type StyleSelectorProps = {
-  styles: string[]
-  selected: string[]
+  styles: Array<string>
+  selected: Array<string>
   toggleStyle: (item: string) => void
   isEditing: boolean
   setIsEditing: (val: boolean) => void
@@ -15,7 +14,6 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   selected,
   toggleStyle,
   isEditing,
-  setIsEditing,
 }) => (
   <>
     <Card className="p-4 h-full">
