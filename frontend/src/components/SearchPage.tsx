@@ -285,6 +285,7 @@ const CafeCard: React.FC<{
   showDistance: boolean
 }> = ({ data, userLocation, showDistance }) => {
   const navigate = useNavigate()
+  const [isFavorite, setIsFavorite] = useState(false)
   const areaInfo = AREAS.find((a) => a.id === data.area)
   const purposeInfo = PURPOSES.find((p) => p.id === data.purpose)
 
@@ -350,9 +351,16 @@ const CafeCard: React.FC<{
           />
         )}
 
-        <div className="absolute top-2 right-2 text-[#F26546] bg-white rounded-full p-1 shadow-sm">
-          <Bookmark size={16} fill="#F26546" />
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsFavorite(!isFavorite)
+          }}
+          className={`absolute top-2 right-2 rounded-full p-1 shadow-sm transition ${
+            isFavorite ? 'text-[#F26546] bg-white' : 'text-gray-400 bg-white'
+          }`}>
+          <Bookmark size={16} fill={isFavorite ? '#F26546' : 'white'} />
+        </button>
 
         {purposeInfo && (
           <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm">
@@ -423,8 +431,8 @@ interface MainContentProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>
   cafes: Cafe[]
   totalItems: number
-  sortBy: 'default' | 'distance' | 'rating'
-  onSortChange: (sort: 'default' | 'distance' | 'rating') => void
+  sortBy: { distance: boolean; rating: boolean }
+  onSortChange: (type: 'distance' | 'rating') => void
   userLocation: { lat: number; lng: number } | null
   showDistance: boolean
 }
@@ -469,7 +477,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={() => onSortChange('distance')}
             className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
-              sortBy === 'distance'
+              sortBy.distance
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -478,7 +486,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={() => onSortChange('rating')}
             className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
-              sortBy === 'rating'
+              sortBy.rating
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -553,9 +561,13 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
     priceMax: null,
     amenities: [],
   })
-  const [sortBy, setSortBy] = useState<'default' | 'distance' | 'rating'>(
-    'default',
-  )
+  const [sortBy, setSortBy] = useState<{
+    distance: boolean
+    rating: boolean
+  }>({
+    distance: false,
+    rating: false,
+  })
   const [priceInputs, setPriceInputs] = useState<{ min: string; max: string }>({
     min: '',
     max: '',
@@ -646,7 +658,8 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
 
   // Sort dữ liệu theo rating hoặc distance
   const sortedData = [...filteredData].sort((a, b) => {
-    if (sortBy === 'distance' && userLocation) {
+    // Priority 1: Sort by distance if enabled
+    if (sortBy.distance && userLocation) {
       const distA =
         a.lat && a.lng
           ? calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)
@@ -655,9 +668,10 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
         b.lat && b.lng
           ? calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng)
           : Infinity
-      return distA - distB
+      if (distA !== distB) return distA - distB
     }
-    if (sortBy === 'rating') {
+    // Priority 2: Sort by rating if enabled
+    if (sortBy.rating) {
       return b.rating - a.rating
     }
     return 0
@@ -673,11 +687,14 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem)
 
-  const handleSortChange = (sort: 'default' | 'distance' | 'rating') => {
-    setSortBy(sort)
+  const handleSortChange = (type: 'distance' | 'rating') => {
+    setSortBy((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }))
 
     // Get user location when distance sort is selected
-    if (sort === 'distance' && !userLocation) {
+    if (type === 'distance' && !sortBy.distance && !userLocation) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -718,7 +735,7 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
           sortBy={sortBy}
           onSortChange={handleSortChange}
           userLocation={userLocation}
-          showDistance={sortBy === 'distance'}
+          showDistance={sortBy.distance}
         />
       </div>
     </div>
