@@ -14,7 +14,6 @@ interface Filters {
 
 const CAFES_DATA: Array<Cafe> = cafeDataRaw as Array<Cafe>
 
-
 interface SearchPageProps {
   initialKeyword?: string
 }
@@ -28,9 +27,13 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
     priceMax: null,
     amenities: [],
   })
-  const [sortBy, setSortBy] = useState<'default' | 'distance' | 'rating'>(
-    'default',
-  )
+  const [sortBy, setSortBy] = useState<{
+    distance: boolean
+    rating: boolean
+  }>({
+    distance: false,
+    rating: false,
+  })
   const [priceInputs, setPriceInputs] = useState<{ min: string; max: string }>({
     min: '',
     max: '',
@@ -121,7 +124,8 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
 
   // Sort dữ liệu theo rating hoặc distance
   const sortedData = [...filteredData].sort((a, b) => {
-    if (sortBy === 'distance' && userLocation) {
+    // Priority 1: Sort by distance if enabled
+    if (sortBy.distance && userLocation) {
       const distA =
         a.lat && a.lng
           ? calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)
@@ -130,9 +134,10 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
         b.lat && b.lng
           ? calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng)
           : Infinity
-      return distA - distB
+      if (distA !== distB) return distA - distB
     }
-    if (sortBy === 'rating') {
+    // Priority 2: Sort by rating if enabled
+    if (sortBy.rating) {
       return b.rating - a.rating
     }
     return 0
@@ -148,24 +153,27 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem)
 
-  const handleSortChange = (sort: 'default' | 'distance' | 'rating') => {
-    setSortBy(sort)
+  const handleSortChange = (type: 'distance' | 'rating') => {
+    setSortBy((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }))
 
     // Get user location when distance sort is selected
-    if (sort === 'distance' && !userLocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            })
-          },
-          (error) => {
-            console.error('Error getting location:', error)
-            // Fallback to Hanoi center
-            setUserLocation({ lat: 21.0285, lng: 105.8542 })
-          },
-        )
+    if (type === 'distance' && !sortBy.distance && !userLocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        },
+        (error) => {
+          console.error('Error getting location:', error)
+          // Fallback to Hanoi center
+          setUserLocation({ lat: 21.0285, lng: 105.8542 })
+        },
+      )
     }
   }
 
@@ -189,7 +197,7 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
           sortBy={sortBy}
           onSortChange={handleSortChange}
           userLocation={userLocation}
-          showDistance={sortBy === 'distance'}
+          showDistance={sortBy.distance}
         />
       </div>
     </div>
@@ -197,4 +205,3 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
 }
 
 export default App
- 

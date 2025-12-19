@@ -1,15 +1,15 @@
-import { ChevronLeft, ChevronRight, Search } from "lucide-react"
-import CafeCard from "../cafe/CafeCard"
-import PaginationButton from "../pagination/PaginationButtonProps"
-import type { Cafe } from "@/types/cafe"
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import CafeCard from '../cafe/CafeCard'
+import PaginationButton from '../pagination/PaginationButtonProps'
+import type { Cafe } from '@/types/cafe'
 
 interface MainContentProps {
   currentPage: number
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>
   cafes: Array<Cafe>
   totalItems: number
-  sortBy: 'default' | 'distance' | 'rating'
-  onSortChange: (sort: 'default' | 'distance' | 'rating') => void
+  sortBy: { distance: boolean; rating: boolean }
+  onSortChange: (type: 'distance' | 'rating') => void
   userLocation: { lat: number; lng: number } | null
   showDistance: boolean
 }
@@ -54,7 +54,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={() => onSortChange('distance')}
             className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
-              sortBy === 'distance'
+              sortBy.distance
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -63,7 +63,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={() => onSortChange('rating')}
             className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
-              sortBy === 'rating'
+              sortBy.rating
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
