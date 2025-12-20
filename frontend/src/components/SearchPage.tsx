@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import FilterSidebar from './search/filter/FilterSidebar'
 import MainContent from './search/MainSearch'
 import type { Cafe } from '@/types/cafe'
@@ -14,12 +14,11 @@ interface Filters {
 
 const CAFES_DATA: Array<Cafe> = cafeDataRaw as Array<Cafe>
 
-
-interface SearchPageProps {
+export default function SearchPage({
+  initialKeyword = '',
+}: {
   initialKeyword?: string
-}
-
-const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
+}) {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [filters, setFilters] = useState<Filters>({
     area: null,
@@ -28,9 +27,13 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
     priceMax: null,
     amenities: [],
   })
-  const [sortBy, setSortBy] = useState<'default' | 'distance' | 'rating'>(
-    'default',
-  )
+  const [sortBy, setSortBy] = useState<{
+    distance: boolean
+    rating: boolean
+  }>({
+    distance: false,
+    rating: false,
+  })
   const [priceInputs, setPriceInputs] = useState<{ min: string; max: string }>({
     min: '',
     max: '',
@@ -121,7 +124,8 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
 
   // Sort dữ liệu theo rating hoặc distance
   const sortedData = [...filteredData].sort((a, b) => {
-    if (sortBy === 'distance' && userLocation) {
+    // Priority 1: Sort by distance if enabled
+    if (sortBy.distance && userLocation) {
       const distA =
         a.lat && a.lng
           ? calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)
@@ -130,9 +134,10 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
         b.lat && b.lng
           ? calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng)
           : Infinity
-      return distA - distB
+      if (distA !== distB) return distA - distB
     }
-    if (sortBy === 'rating') {
+    // Priority 2: Sort by rating if enabled
+    if (sortBy.rating) {
       return b.rating - a.rating
     }
     return 0
@@ -141,37 +146,41 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
   // Reset về trang 1 khi filter hoặc sort thay đổi
   useEffect(() => {
     setCurrentPage(1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [filters, initialKeyword, sortBy])
 
-  const ITEMS_PER_PAGE = 10
+  const ITEMS_PER_PAGE = 9
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem)
 
-  const handleSortChange = (sort: 'default' | 'distance' | 'rating') => {
-    setSortBy(sort)
+  const handleSortChange = (type: 'distance' | 'rating') => {
+    setSortBy((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }))
 
     // Get user location when distance sort is selected
-    if (sort === 'distance' && !userLocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            })
-          },
-          (error) => {
-            console.error('Error getting location:', error)
-            // Fallback to Hanoi center
-            setUserLocation({ lat: 21.0285, lng: 105.8542 })
-          },
-        )
+    if (type === 'distance' && !sortBy.distance && !userLocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        },
+        (error) => {
+          console.error('Error getting location:', error)
+          // Fallback to Hanoi center
+          setUserLocation({ lat: 21.0285, lng: 105.8542 })
+        },
+      )
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col font-sans w-full">
-      <div className="w-full flex flex-col md:flex-row gap-8 p-4 md:px-8 md:py-8 relative">
+    <div className="flex w-full flex-col font-sans">
+      <div className="relative flex w-full flex-col gap-8 p-4 md:flex-row md:px-8 md:py-8">
         <FilterSidebar
           filters={filters}
           setFilters={setFilters}
@@ -189,12 +198,9 @@ const App: React.FC<SearchPageProps> = ({ initialKeyword = '' }) => {
           sortBy={sortBy}
           onSortChange={handleSortChange}
           userLocation={userLocation}
-          showDistance={sortBy === 'distance'}
+          showDistance={sortBy.distance}
         />
       </div>
     </div>
   )
 }
-
-export default App
- 

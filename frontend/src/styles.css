@@ -118,3 +118,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar */
+body {
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  background: #ff6347;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff6f47;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff6347;
+}

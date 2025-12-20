@@ -1,4 +1,4 @@
-import FilterDropdown from "./FilterDropdown"
+import FilterDropdown from './FilterDropdown'
 
 interface Filters {
   area: string | null
@@ -20,8 +20,6 @@ interface FilterSidebarProps {
   setPriceApplied: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-
-
 const AREAS = [
   { id: 'hbt', label: 'Hai Ba Trung', jpLabel: 'ハイバーチュン区' },
   { id: 'hk', label: 'Hoan Kiem', jpLabel: 'ホアンキエム区' },
@@ -35,7 +33,6 @@ const PURPOSES = [
   { id: 'date', label: 'Hen ho', jpLabel: 'デート' },
   { id: 'relax', label: 'Thu gian', jpLabel: 'リラックス' },
 ]
-
 
 const AMENITY_FILTERS = [
   { id: 'wifi', label: 'Wi-Fiあり' },
@@ -55,7 +52,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   setPriceApplied,
 }) => {
   return (
-    <aside className="w-full md:w-64 shrink-0 space-y-6 md:sticky md:top-24 h-fit">
+    <aside className="h-fit w-full shrink-0 space-y-6 md:sticky md:top-24 md:w-64">
       <FilterDropdown
         title="場所"
         placeholder="場所"
@@ -72,20 +69,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         onSelect={(id) => setFilters((prev) => ({ ...prev, purpose: id }))}
       />
 
-      <div className="border border-gray-300 rounded-lg p-4 bg-white shadow-sm">
-        <div className="bg-[#555] text-white text-center py-1.5 rounded text-sm font-bold mb-4">
+      <div className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
+        <div className="mb-4 rounded bg-[#555] py-1.5 text-center text-sm font-bold text-white">
           価格帯
         </div>
 
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <div className="relative flex-1">
-            <span className="absolute right-2 top-2 text-gray-500 text-xs">
+            <span className="absolute top-2 right-2 text-xs text-gray-500">
               VND
             </span>
             <input
               type="text"
               placeholder="から"
-              className="w-full border border-gray-300 rounded px-2 py-1.5 pr-10 text-sm focus:outline-none focus:border-[#F26546]"
+              className="w-full rounded border border-gray-300 px-2 py-1.5 pr-10 text-sm focus:border-[#F26546] focus:outline-none"
               value={priceInputs.min}
               onChange={(e) => {
                 setPriceInputs((prev) => ({ ...prev, min: e.target.value }))
@@ -95,13 +92,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
           <span className="text-gray-500">~</span>
           <div className="relative flex-1">
-            <span className="absolute right-2 top-2 text-gray-500 text-xs">
+            <span className="absolute top-2 right-2 text-xs text-gray-500">
               VND
             </span>
             <input
               type="text"
               placeholder="まで"
-              className="w-full border border-gray-300 rounded px-2 py-1.5 pr-10 text-sm focus:outline-none focus:border-[#F26546]"
+              className="w-full rounded border border-gray-300 px-2 py-1.5 pr-10 text-sm focus:border-[#F26546] focus:outline-none"
               value={priceInputs.max}
               onChange={(e) => {
                 setPriceInputs((prev) => ({ ...prev, max: e.target.value }))
@@ -113,7 +110,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
         <button
           onClick={onApplyPrice}
-          className={`w-full text-white font-bold py-2 rounded mb-6 transition shadow-sm ${
+          className={`mb-6 w-full rounded py-2 font-bold text-white shadow-sm transition ${
             priceApplied
               ? 'bg-[#e85f2f] shadow-md ring-2 ring-[#f26546]/40'
               : 'bg-[#FF7F50] hover:opacity-90'
@@ -138,10 +135,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     }
                   })
                 }}
-                className={`w-full py-2.5 px-4 rounded text-sm font-bold transition flex items-center justify-center gap-2 border ${
+                className={`flex w-full items-center justify-center gap-2 rounded border px-4 py-2.5 text-sm font-bold transition ${
                   isActive
-                    ? 'bg-[#F26546] text-white border-[#F26546] shadow-sm'
-                    : 'bg-[#444444] text-white hover:bg-[#555] border-[#444444]'
+                    ? 'border-[#F26546] bg-[#F26546] text-white shadow-sm'
+                    : 'border-[#444444] bg-[#444444] text-white hover:bg-[#555]'
                 }`}>
                 {amenity.label}
               </button>

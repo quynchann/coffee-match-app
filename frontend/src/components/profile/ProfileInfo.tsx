@@ -5,7 +5,7 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 
 type ProfileInfoProps = {
-  fullname: string
+  name: string
   email: string
   address: string
   age: number | string
@@ -20,7 +20,7 @@ type ProfileInfoProps = {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
-  fullname,
+  name,
   email,
   address,
   age,
@@ -54,11 +54,11 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   }
 
   return (
-    <Card className="p-4 flex flex-col items-center gap-4 h-full w-full">
+    <Card className="flex h-full w-full flex-col items-center gap-4 p-4">
       <div className="relative">
-        <Avatar className="w-32 h-32 md:w-40 md:h-40 cursor-pointer">
+        <Avatar className="h-32 w-32 cursor-pointer md:h-40 md:w-40">
           <AvatarImage src={previewUrl} alt="User Avatar" />
-          <AvatarFallback className="bg-gray-600 text-white text-3xl md:text-4xl">
+          <AvatarFallback className="bg-gray-600 text-3xl text-white md:text-4xl">
             U
           </AvatarFallback>
         </Avatar>
@@ -84,7 +84,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
         )}
       </div>
 
-      <h2 className="text-lg md:text-xl font-semibold">{fullname}</h2>
+      <h2 className="text-lg font-semibold md:text-xl">{name}</h2>
 
       <div className="w-full space-y-3">
         <div>
@@ -120,7 +120,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
       </div>
       <Button
         variant="primary"
-        className="w-full mt-4 cursor-pointer"
+        className="mt-4 w-full cursor-pointer"
         onClick={() => setIsOpenChangePassword(true)}>
         パスワード変更
       </Button>

@@ -1,4 +1,4 @@
-import { Car, Check, Coffee, Dog, Volume2, Wifi } from "lucide-react"
+import { Car, Check, Coffee, Dog, Volume2, Wifi } from 'lucide-react'
 
 const FeatureItem: React.FC<{ text: string }> = ({ text }) => {
   let Icon = Check
@@ -9,8 +9,8 @@ const FeatureItem: React.FC<{ text: string }> = ({ text }) => {
   if (text.includes('静か') || text.includes('yên tĩnh')) Icon = Volume2
 
   return (
-    <li className="flex items-center gap-3 p-3 rounded-lg bg-orange-50/50 border border-orange-100/50 hover:bg-orange-50 transition-colors">
-      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-[#F26546] border border-orange-100 flex-shrink-0">
+    <li className="flex items-center gap-3 rounded-lg border border-orange-100/50 bg-orange-50/50 p-3 transition-colors hover:bg-orange-50">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-orange-100 bg-white text-[#F26546] shadow-sm">
         <Icon size={16} />
       </div>
       <span className="text-sm font-medium text-gray-700">{text}</span>

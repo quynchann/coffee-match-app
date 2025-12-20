@@ -1,15 +1,15 @@
-import { ChevronLeft, ChevronRight, Search } from "lucide-react"
-import CafeCard from "../cafe/CafeCard"
-import PaginationButton from "../pagination/PaginationButtonProps"
-import type { Cafe } from "@/types/cafe"
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import CafeCard from '../cafe/CafeCard'
+import PaginationButton from '../pagination/PaginationButtonProps'
+import type { Cafe } from '@/types/cafe'
 
 interface MainContentProps {
   currentPage: number
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>
   cafes: Array<Cafe>
   totalItems: number
-  sortBy: 'default' | 'distance' | 'rating'
-  onSortChange: (sort: 'default' | 'distance' | 'rating') => void
+  sortBy: { distance: boolean; rating: boolean }
+  onSortChange: (type: 'distance' | 'rating') => void
   userLocation: { lat: number; lng: number } | null
   showDistance: boolean
 }
@@ -24,7 +24,7 @@ const MainContent: React.FC<MainContentProps> = ({
   userLocation,
   showDistance,
 }) => {
-  const ITEMS_PER_PAGE = 10
+  const ITEMS_PER_PAGE = 9
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1
 
   const handlePrev = () => {
@@ -41,20 +41,20 @@ const MainContent: React.FC<MainContentProps> = ({
   }
 
   return (
-    <main className="flex-1">
-      <div className="flex justify-center mb-8">
-        <div className="bg-[#666] text-white px-12 py-3 rounded text-xl font-bold shadow-sm text-center relative">
+    <div className="flex-1">
+      <div className="mb-8 flex justify-center">
+        <div className="relative rounded bg-[#666] px-12 py-3 text-center text-xl font-bold text-white shadow-sm">
           カフェ検索結果
         </div>
       </div>
 
-      <div className="bg-[#D9D9D9] p-3 rounded mb-6 flex flex-col sm:flex-row items-center justify-between sm:justify-start gap-4 sm:gap-0">
-        <span className="font-bold text-gray-700 mr-6 text-lg">並び替え</span>
-        <div className="flex gap-4 sm:gap-8 w-full sm:w-auto">
+      <div className="mb-6 flex flex-col items-center justify-between gap-4 rounded bg-[#D9D9D9] p-3 sm:flex-row sm:justify-start sm:gap-0">
+        <span className="mr-6 text-lg font-bold text-gray-700">並び替え</span>
+        <div className="flex w-full gap-4 sm:w-auto sm:gap-8">
           <button
             onClick={() => onSortChange('distance')}
-            className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
-              sortBy === 'distance'
+            className={`flex-1 rounded px-8 py-1.5 text-sm font-bold transition sm:flex-none ${
+              sortBy.distance
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -62,8 +62,8 @@ const MainContent: React.FC<MainContentProps> = ({
           </button>
           <button
             onClick={() => onSortChange('rating')}
-            className={`flex-1 sm:flex-none px-8 py-1.5 rounded text-sm font-bold transition ${
-              sortBy === 'rating'
+            className={`flex-1 rounded px-8 py-1.5 text-sm font-bold transition sm:flex-none ${
+              sortBy.rating
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -73,7 +73,7 @@ const MainContent: React.FC<MainContentProps> = ({
       </div>
 
       {cafes.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cafes.map((item) => (
             <CafeCard
               key={item.id}
@@ -84,7 +84,7 @@ const MainContent: React.FC<MainContentProps> = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white py-20 text-gray-500">
           <Search size={48} className="mb-4 text-gray-300" />
           <p className="text-lg font-bold">
             適切なカフェが見つかりませんでした。
@@ -96,11 +96,11 @@ const MainContent: React.FC<MainContentProps> = ({
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mb-8 mt-8 select-none">
+        <div className="mt-8 mb-8 flex items-center justify-center gap-2 select-none">
           <button
             onClick={handlePrev}
             disabled={currentPage === 1}
-            className="p-2 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50">
             <ChevronLeft size={18} />
           </button>
 
@@ -116,12 +116,12 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50">
             <ChevronRight size={18} />
           </button>
         </div>
       )}
-    </main>
+    </div>
   )
 }
 

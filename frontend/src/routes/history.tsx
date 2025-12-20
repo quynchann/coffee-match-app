@@ -1,17 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import DetailPage from '@/components/DetailPage'
+import HistoryPage from '@/components/HistoryPage'
 
-export const Route = createFileRoute('/detail')({
-  component: Detail,
+export const Route = createFileRoute('/history')({
+  component: History,
 })
 
-function Detail() {
+function History() {
   return (
     <div className="text-center">
-      <Header />
-      <DetailPage />
+      <Header isAuthenticated={true} />
+      <HistoryPage />
       <Footer />
     </div>
   )

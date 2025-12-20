@@ -1,6 +1,7 @@
-import { useNavigate } from "@tanstack/react-router"
-import { Bookmark, ImageIcon, Star } from "lucide-react"
-import type { Cafe } from "@/types/cafe"
+import { useNavigate } from '@tanstack/react-router'
+import { Bookmark, ImageIcon, Star } from 'lucide-react'
+import { useState } from 'react'
+import type { Cafe } from '@/types/cafe'
 
 const AREAS = [
   { id: 'hbt', label: 'Hai Ba Trung', jpLabel: 'ハイバーチュン区' },
@@ -16,13 +17,13 @@ const PURPOSES = [
   { id: 'relax', label: 'Thu gian', jpLabel: 'リラックス' },
 ]
 
-
 const CafeCard: React.FC<{
   data: Cafe
   userLocation: { lat: number; lng: number } | null
   showDistance: boolean
 }> = ({ data, userLocation, showDistance }) => {
   const navigate = useNavigate()
+  const [isFavorite, setIsFavorite] = useState(false)
   const areaInfo = AREAS.find((a) => a.id === data.area)
   const purposeInfo = PURPOSES.find((p) => p.id === data.purpose)
 
@@ -73,38 +74,45 @@ const CafeCard: React.FC<{
   return (
     <div
       onClick={handleClick}
-      className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition group h-full flex flex-col cursor-pointer">
-      <div className="h-40 bg-gray-200 relative flex items-center justify-center overflow-hidden shrink-0">
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-lg border border-gray-300 bg-white shadow-sm transition hover:shadow-md">
+      <div className="relative flex h-40 shrink-0 items-center justify-center overflow-hidden bg-gray-200">
         {displayImage ? (
           <img
             src={displayImage}
             alt={data.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
           />
         ) : (
           <ImageIcon
             size={48}
-            className="text-gray-400 group-hover:scale-110 transition duration-500"
+            className="text-gray-400 transition duration-500 group-hover:scale-110"
           />
         )}
 
-        <div className="absolute top-2 right-2 text-[#F26546] bg-white rounded-full p-1 shadow-sm">
-          <Bookmark size={16} fill="#F26546" />
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsFavorite(!isFavorite)
+          }}
+          className={`absolute top-2 right-2 rounded-full p-1 shadow-sm transition ${
+            isFavorite ? 'bg-white text-[#F26546]' : 'bg-white text-gray-400'
+          }`}>
+          <Bookmark size={16} fill={isFavorite ? '#F26546' : 'white'} />
+        </button>
 
         {purposeInfo && (
-          <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm">
+          <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-1 text-[10px] text-white backdrop-blur-sm">
             {purposeInfo.jpLabel}
           </div>
         )}
       </div>
 
-      <div className="p-3 flex flex-col flex-1">
-        <div className="flex justify-between items-start mb-1">
-          <h3 className="font-bold text-lg text-gray-800 line-clamp-1">
+      <div className="flex flex-1 flex-col p-3">
+        <div className="mb-1 flex items-start justify-between">
+          <h3 className="line-clamp-1 text-lg font-bold text-gray-800">
             {data.name}
           </h3>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex shrink-0 items-center gap-1">
             <span className="text-lg font-bold text-gray-700">
               {data.rating}
             </span>
@@ -112,10 +120,10 @@ const CafeCard: React.FC<{
           </div>
         </div>
 
-        <div className="text-xs text-gray-600 space-y-1 mt-auto">
+        <div className="mt-auto space-y-1 text-xs text-gray-600">
           <p className="text-left">営業時間: {data.hours}</p>
           <p className="line-clamp-1 text-left">住所: {data.address}</p>
-          <p className="font-semibold text-gray-500 text-left">
+          <p className="text-left font-semibold text-gray-500">
             {areaInfo ? `${areaInfo.jpLabel} (${areaInfo.label})` : 'Hanoi'}
           </p>
           {showDistance && distance !== null && (

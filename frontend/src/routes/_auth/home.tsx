@@ -9,16 +9,16 @@ export const Route = createFileRoute('/_auth/home')({
 
 function Home() {
   return (
-    <div className="text-center">
-      <Header isAuthenticated={true} />
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex flex-1 flex-col items-center justify-center bg-[#282c34] text-[calc(10px+2vmin)] text-white">
         <img
           src={logo}
-          className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"
+          className="pointer-events-none h-[40vmin] animate-[spin_20s_linear_infinite]"
           alt="logo"
         />
         <p>Welcome to the Home Page!</p>
-      </div>
+      </main>
       <Footer />
     </div>
   )

@@ -1,14 +1,58 @@
-import { Bookmark, Camera, Check, ChevronLeft, ChevronRight, Clock, Coffee, ImageIcon, MapPin, Phone, Share2, Star } from "lucide-react"
-import { useEffect, useState } from "react"
-import SectionCard from "./SectionCard"
-import FeatureItem from "./FeatureItem"
-import ReviewForm from "./ReviewForm"
-import type { Cafe } from "@/types/cafe"
-
+import {
+  Bookmark,
+  Camera,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Coffee,
+  DollarSign,
+  ImageIcon,
+  MapPin,
+  Phone,
+  Share2,
+  Star,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import SectionCard from './SectionCard'
+import FeatureItem from './FeatureItem'
+import ReviewForm from './ReviewForm'
+import type { Cafe } from '@/types/cafe'
 
 const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [reviews, setReviews] = useState(cafe.reviews || [])
+  const [pageIndex, setPageIndex] = useState(0)
+  const itemsPerPage = 4
+  const totalPages = Math.max(
+    1,
+    Math.ceil((cafe.features || []).length / itemsPerPage),
+  )
+
+  const [menuPageIndex, setMenuPageIndex] = useState(0)
+  const menuItemsPerPage = 6
+  const menuTotalPages = Math.max(
+    1,
+    Math.ceil((cafe.menu || []).length / menuItemsPerPage),
+  )
+
+  const [thumbPageIndex, setThumbPageIndex] = useState(0)
+  const thumbItemsPerPage = 6
+  const thumbTotalPages = Math.max(
+    1,
+    Math.ceil((cafe.images || []).length / thumbItemsPerPage),
+  )
+
+  const goPrev = () => setPageIndex((p) => (p - 1 + totalPages) % totalPages)
+  const goNext = () => setPageIndex((p) => (p + 1) % totalPages)
+
+  const goPrevMenu = () =>
+    setMenuPageIndex((p) => (p - 1 + menuTotalPages) % menuTotalPages)
+  const goNextMenu = () => setMenuPageIndex((p) => (p + 1) % menuTotalPages)
+
+  const goPrevThumb = () =>
+    setThumbPageIndex((p) => (p - 1 + thumbTotalPages) % thumbTotalPages)
+  const goNextThumb = () => setThumbPageIndex((p) => (p + 1) % thumbTotalPages)
 
   const handleAddReview = (newReview: {
     rating: number
@@ -33,6 +77,9 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
   // Reset image index khi đổi cafe
   useEffect(() => {
     setCurrentImageIndex(0)
+    setPageIndex(0)
+    setMenuPageIndex(0)
+    setThumbPageIndex(0)
   }, [cafe.id])
 
   const nextImage = () => {
@@ -55,16 +102,16 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
       : null
 
   return (
-    <div className="w-full p-4 md:p-8 space-y-8 bg-white md:bg-transparent">
-      <div className="bg-white md:rounded-xl md:shadow-md md:p-8 border border-gray-100 overflow-hidden w-full">
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/2 aspect-video bg-gray-100 rounded-lg relative group overflow-hidden border border-gray-100">
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 relative overflow-hidden">
+    <div className="w-full space-y-8 bg-white p-4 md:bg-transparent md:p-8">
+      <div className="w-full overflow-hidden border border-gray-100 bg-white md:rounded-xl md:p-8 md:shadow-md">
+        <div className="flex flex-col gap-8 md:flex-row">
+          <div className="group relative aspect-video w-full overflow-hidden rounded-lg border border-gray-100 bg-gray-100 md:w-1/2">
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-gray-200">
               {displayImage ? (
                 <img
                   src={displayImage}
                   alt={cafe.name}
-                  className="w-full h-full object-cover transition-opacity duration-300"
+                  className="h-full w-full object-cover transition-opacity duration-300"
                 />
               ) : (
                 <ImageIcon size={64} className="text-gray-400" />
@@ -77,7 +124,7 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                       e.stopPropagation()
                       prevImage()
                     }}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition opacity-0 group-hover:opacity-100">
+                    className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 transition group-hover:opacity-100 hover:bg-black/50">
                     <ChevronLeft size={24} />
                   </button>
                   <button
@@ -85,16 +132,16 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                       e.stopPropagation()
                       nextImage()
                     }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition opacity-0 group-hover:opacity-100">
+                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 transition group-hover:opacity-100 hover:bg-black/50">
                     <ChevronRight size={24} />
                   </button>
 
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                  <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
                     {cafe.images.map((_, idx) => (
                       <div
                         key={idx}
                         onClick={() => setCurrentImageIndex(idx)}
-                        className={`w-2 h-2 rounded-full transition-all cursor-pointer shadow-sm ${idx === currentImageIndex ? 'bg-white w-4' : 'bg-white/60 hover:bg-white'}`}
+                        className={`h-2 w-2 cursor-pointer rounded-full shadow-sm transition-all ${idx === currentImageIndex ? 'w-4 bg-white' : 'bg-white/60 hover:bg-white'}`}
                       />
                     ))}
                   </div>
@@ -103,12 +150,12 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
             </div>
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col justify-center space-y-5">
+          <div className="flex w-full flex-col justify-center space-y-5 md:w-1/2">
             <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 tracking-tight text-left">
+              <h1 className="text-left text-3xl font-extrabold tracking-tight text-gray-800 md:text-4xl">
                 {cafe.name}
               </h1>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="mt-2 flex items-center gap-2">
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star
@@ -116,32 +163,36 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                       size={18}
                       className={
                         s <= Math.round(cafe.rating)
-                          ? 'text-[#F26546] fill-[#F26546]'
+                          ? 'fill-[#F26546] text-[#F26546]'
                           : 'text-gray-200'
                       }
                     />
                   ))}
                 </div>
-                <span className="text-gray-500 text-sm font-medium">
+                <span className="text-sm font-medium text-gray-500">
                   ({cafe.rating}/5.0)
                 </span>
               </div>
             </div>
 
-            <p className="text-gray-600 leading-relaxed text-sm md:text-base border-l-4 border-[#F26546] pl-4 italic bg-gray-50 py-2 rounded-r text-left">
+            <p className="rounded-r border-l-4 border-[#F26546] bg-gray-50 py-2 pl-4 text-left text-sm leading-relaxed text-gray-600 italic md:text-base">
               {cafe.description || 'Chưa có mô tả chi tiết cho quán này.'}
             </p>
 
             <div className="space-y-3 text-sm text-gray-700">
-              <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+              <div className="flex items-center gap-3 rounded p-2 transition hover:bg-gray-50">
                 <MapPin size={20} className="text-[#F26546]" />
                 <span className="font-medium">{cafe.address}</span>
               </div>
-              <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+              <div className="flex items-center gap-3 rounded p-2 transition hover:bg-gray-50">
+                <DollarSign size={20} className="text-[#F26546]" />
+                <span className="font-medium">{cafe.priceRange}</span>
+              </div>
+              <div className="flex items-center gap-3 rounded p-2 transition hover:bg-gray-50">
                 <Clock size={20} className="text-[#F26546]" />
                 <span className="font-medium">{cafe.hours}</span>
               </div>
-              <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+              <div className="flex items-center gap-3 rounded p-2 transition hover:bg-gray-50">
                 <Phone size={20} className="text-[#F26546]" />
                 <span className="font-medium">
                   {cafe.phone || '090-XXXX-XXXX'}
@@ -149,11 +200,11 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t border-gray-100 justify-center">
-              <button className="w-48 flex items-center justify-center gap-2 bg-[#F26546] text-white py-3 rounded-lg font-bold hover:bg-[#e05535] transition shadow-sm shadow-orange-200">
+            <div className="flex justify-center gap-3 border-t border-gray-100 pt-4">
+              <button className="flex w-48 items-center justify-center gap-2 rounded-lg bg-[#F26546] py-3 font-bold text-white shadow-sm shadow-orange-200 transition hover:bg-[#e05535]">
                 <Bookmark size={18} /> 保存
               </button>
-              <button className="w-48 flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-50 transition">
+              <button className="flex w-48 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 font-bold text-gray-700 transition hover:bg-gray-50">
                 <Share2 size={18} /> 共有
               </button>
             </div>
@@ -163,62 +214,138 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
 
       {cafe.features && cafe.features.length > 0 && (
         <SectionCard title="お店の機能" icon={<Check size={18} />}>
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {cafe.features.map((feature, idx) => (
-              <FeatureItem key={idx} text={feature} />
-            ))}
-          </ul>
+          <div className="relative">
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-300"
+                style={{ transform: `translateX(-${pageIndex * 100}%)` }}>
+                {cafe.features.map((feature, idx) => (
+                  <div key={idx} className="w-1/4 shrink-0 px-2">
+                    <FeatureItem text={feature} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {totalPages > 1 && (
+              <>
+                <button
+                  onClick={goPrev}
+                  aria-label="Previous features"
+                  className="absolute top-1/2 -left-6 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 text-[#F26546] shadow hover:bg-gray-50 disabled:opacity-40">
+                  <ChevronLeft size={18} />
+                </button>
+
+                <button
+                  onClick={goNext}
+                  aria-label="Next features"
+                  className="absolute top-1/2 -right-6 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 text-[#F26546] shadow hover:bg-gray-50 disabled:opacity-40">
+                  <ChevronRight size={18} />
+                </button>
+              </>
+            )}
+          </div>
         </SectionCard>
       )}
 
       {cafe.images && cafe.images.length > 0 && (
         <SectionCard title="お店の写真" icon={<Camera size={18} />}>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {cafe.images.map((img, idx) => (
+          <div className="relative">
+            <div className="overflow-hidden py-2">
               <div
-                key={idx}
-                onClick={() => setCurrentImageIndex(idx)}
-                className={`aspect-square bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden cursor-pointer group border transition ${currentImageIndex === idx ? 'border-[#F26546] ring-2 ring-[#F26546]/20' : 'border-gray-100 hover:shadow-md'}`}>
-                <img
-                  src={img}
-                  alt={`Thumbnail ${idx}`}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
+                className="flex transition-transform duration-300"
+                style={{ transform: `translateX(-${thumbPageIndex * 100}%)` }}>
+                {cafe.images.map((img, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`w-1/${thumbItemsPerPage} shrink-0 px-2`}>
+                    <div
+                      className={`flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-lg border bg-gray-100 transition ${currentImageIndex === idx ? 'border-[#F26546] ring-2 ring-[#F26546]/20' : 'border-gray-100 hover:shadow-md'}`}>
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${idx}`}
+                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {thumbTotalPages > 1 && (
+              <>
+                <button
+                  onClick={goPrevThumb}
+                  aria-label="Previous thumbnails"
+                  className="absolute top-1/2 -left-6 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 text-[#F26546] shadow hover:bg-gray-50">
+                  <ChevronLeft size={18} />
+                </button>
+
+                <button
+                  onClick={goNextThumb}
+                  aria-label="Next thumbnails"
+                  className="absolute top-1/2 -right-6 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 text-[#F26546] shadow hover:bg-gray-50">
+                  <ChevronRight size={18} />
+                </button>
+              </>
+            )}
           </div>
         </SectionCard>
       )}
 
       {cafe.menu && cafe.menu.length > 0 && (
         <SectionCard title="お店のメニュー" icon={<Coffee size={18} />}>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {cafe.menu.map((item, idx) => (
+          <div className="relative">
+            <div className="overflow-hidden py-2">
               <div
-                key={idx}
-                className="group bg-white rounded-lg p-2 border border-gray-100 shadow-sm hover:shadow-md transition">
-                <div className="aspect-video bg-gray-50 rounded-md flex items-center justify-center relative overflow-hidden mb-2">
-                  <span className="absolute top-2 right-2 text-xs font-bold bg-[#F26546] text-white px-2 py-0.5 rounded-full shadow-sm z-10">
-                    {item.price}
-                  </span>
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-contain group-hover:scale-110 transition"
-                    />
-                  ) : (
-                    <ImageIcon
-                      size={32}
-                      className="text-gray-300 group-hover:scale-110 transition"
-                    />
-                  )}
-                </div>
-                <p className="text-center text-sm font-bold text-gray-700 group-hover:text-[#F26546] transition">
-                  {item.name}
-                </p>
+                className="flex transition-transform duration-300"
+                style={{ transform: `translateX(-${menuPageIndex * 100}%)` }}>
+                {cafe.menu.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-1/${menuItemsPerPage} shrink-0 px-2`}>
+                    <div className="rounded-lg border border-gray-100 bg-white p-2 shadow-sm transition hover:shadow-md">
+                      <div className="peer relative mb-2 flex aspect-video items-center justify-center overflow-hidden rounded-md bg-gray-50">
+                        <span className="absolute top-2 right-2 z-10 rounded-full bg-[#F26546] px-2 py-0.5 text-xs font-bold text-white shadow-sm">
+                          {item.price}
+                        </span>
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <ImageIcon size={32} className="text-gray-300" />
+                        )}
+                      </div>
+                      <p className="text-center text-sm font-bold text-gray-700 transition peer-has-hover:text-[#F26546]">
+                        {item.name}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {menuTotalPages > 1 && (
+              <>
+                <button
+                  onClick={goPrevMenu}
+                  aria-label="Previous menu"
+                  className="absolute top-1/2 -left-6 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 text-[#F26546] shadow hover:bg-gray-50">
+                  <ChevronLeft size={18} />
+                </button>
+
+                <button
+                  onClick={goNextMenu}
+                  aria-label="Next menu"
+                  className="absolute top-1/2 -right-6 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 text-[#F26546] shadow hover:bg-gray-50">
+                  <ChevronRight size={18} />
+                </button>
+              </>
+            )}
           </div>
         </SectionCard>
       )}
@@ -226,19 +353,19 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
       <SectionCard title="カフェの評価" icon={<Star size={18} />}>
         <ReviewForm onAddReview={handleAddReview} />
 
-        <div className="space-y-6 w-full">
+        <div className="w-full space-y-6">
           {reviews.length > 0 ? (
             reviews.map((review) => (
               <div
                 key={review.id}
-                className="pb-6 border-b border-gray-100 last:border-0 last:pb-0">
-                <div className="flex justify-between items-start mb-2">
+                className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                <div className="mb-2 flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-gray-100 font-bold text-gray-500">
                       {review.user.charAt(0)}
                     </div>
                     <div>
-                      <span className="font-bold text-sm text-gray-800 block text-left">
+                      <span className="block text-left text-sm font-bold text-gray-800">
                         {review.user}
                       </span>
                       <div className="flex items-center gap-2">
@@ -249,13 +376,13 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                               size={12}
                               className={
                                 s <= review.rating
-                                  ? 'text-[#F26546] fill-[#F26546]'
+                                  ? 'fill-[#F26546] text-[#F26546]'
                                   : 'text-gray-200'
                               }
                             />
                           ))}
                         </div>
-                        <span className="text-xs text-gray-400 font-medium">
+                        <span className="text-xs font-medium text-gray-400">
                           | {review.date}
                         </span>
                       </div>
@@ -269,18 +396,18 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                       <img
                         src={review.image}
                         alt="Review"
-                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                        className="h-32 w-32 rounded-lg border border-gray-200 object-cover"
                       />
                     </div>
                   )}
-                  <p className="text-sm text-gray-700 leading-relaxed bg-gray-50/50 p-3 rounded-lg border border-gray-50 text-left">
+                  <p className="rounded-lg border border-gray-50 bg-gray-50/50 p-3 text-left text-sm leading-relaxed text-gray-700">
                     {review.content}
                   </p>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500 text-sm py-4">
+            <p className="py-4 text-center text-sm text-gray-500">
               まだレビューはありません。
             </p>
           )}

@@ -1,16 +1,19 @@
 import 'dotenv/config'
-import connectDB from '../config/db.js'
+import connectDB from '@/config/db.js'
 import seedUsers from './seed-user.js'
-// import seedProducts from './seed-product.js' // Ví dụ thêm seeder khác
+import seedShops from './seed-shops.js'
+import seedReviews from './seed-reviews.js'
+import RefreshToken from '@/models/RefreshToken.js'
 
 const runSeeds = async () => {
   try {
     await connectDB()
 
     console.log('--- Start Seeding ---')
-
+    await RefreshToken.deleteMany()
     await seedUsers()
-    // await seedProducts()
+    await seedShops()
+    await seedReviews()
 
     console.log('--- Seeding Completed ---')
     process.exit()

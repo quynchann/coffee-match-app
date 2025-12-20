@@ -1,15 +1,15 @@
-import RefreshToken from "../models/RefreshToken.js";
+import RefreshToken from '@/models/RefreshToken.js'
 
 async function createRefreshToken(data) {
-  return await RefreshToken.create(data);
+  return await RefreshToken.create(data)
 }
 
 async function findRefreshTokenByToken(token) {
-  return await RefreshToken.findOne({ token });
+  return await RefreshToken.findOne({ token })
 }
 
 async function deleteRefreshToken(id) {
-  return await RefreshToken.findByIdAndDelete(id);
+  return await RefreshToken.findByIdAndDelete(id)
 }
 
-export { createRefreshToken, findRefreshTokenByToken, deleteRefreshToken };
+export { createRefreshToken, findRefreshTokenByToken, deleteRefreshToken }

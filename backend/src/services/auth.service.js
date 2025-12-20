@@ -1,11 +1,11 @@
-import * as userRepo from '../repositories/user.repository.js'
-import * as refreshTokenRepo from '../repositories/refreshToken.repository.js'
+import * as userRepo from '@/repositories/user.repository.js'
+import * as refreshTokenRepo from '@/repositories/refreshToken.repository.js'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import ms from 'ms'
 import 'dotenv/config'
-import { hashPassword, comparePassword } from '../utils/hash-password.js'
-import ApiError from '../utils/api-error.js'
+import { hashPassword, comparePassword } from '@/utils/hash-password.js'
+import ApiError from '@/utils/api-error.js'
 
 const generateTokens = async (user, deviceInfo) => {
   const expiresIn = process.env.JWT_EXPIRES_IN || '15m'
@@ -99,9 +99,8 @@ async function signin({ email, password, deviceInfo }) {
 
 async function refreshToken({ refreshToken, deviceInfo }) {
   try {
-    const tokenDoc = await refreshTokenRepo.findRefreshTokenByToken(
-      refreshToken
-    )
+    const tokenDoc =
+      await refreshTokenRepo.findRefreshTokenByToken(refreshToken)
     if (!tokenDoc) {
       throw new ApiError('Invalid refresh token', 401, 'INVALID_REFRESH_TOKEN')
     }

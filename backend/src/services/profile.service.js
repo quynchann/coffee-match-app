@@ -1,75 +1,75 @@
-import * as userRepo from "../repositories/user.repository.js";
-import { comparePassword, hashPassword } from "../utils/hash-password.js";
+import * as userRepo from '@/repositories/user.repository.js'
+import { comparePassword, hashPassword } from '@/utils/hash-password.js'
 
 async function getUserProfile(userId) {
-  const user = await userRepo.findUserById(userId);
+  const user = await userRepo.findUserById(userId)
 
   if (!user) {
-    return null;
+    return null
   }
 
   const profile = {
     id: user._id,
-    name: user.fullname || user.username,
+    name: user.username,
     email: user.email,
     address: user.address,
     age: user.age,
     avatar: user.avatar,
-    styles: user.styles,
-  };
+    styles: user.styles
+  }
 
-  return profile;
+  return profile
 }
 
 async function updateProfile(userId, profileData, avatarPath = null) {
-  const updateData = { ...profileData };
+  const updateData = { ...profileData }
 
   if (avatarPath) {
-    updateData.avatar = avatarPath;
+    updateData.avatar = avatarPath
   }
 
-  const updatedUser = await userRepo.updateUser(userId, updateData);
+  const updatedUser = await userRepo.updateUser(userId, updateData)
 
   if (!updatedUser) {
-    return null;
+    return null
   }
 
   // Định dạng lại dữ liệu trước khi trả về
   const profile = {
     id: updatedUser._id,
-    name: updatedUser.fullname || updatedUser.username,
+    name: updatedUser.username,
     email: updatedUser.email,
     address: updatedUser.address,
     age: updatedUser.age,
     styles: updatedUser.styles,
-    avatar: updatedUser.avatar, // Trả về đường dẫn avatar mới
-  };
+    avatar: updatedUser.avatar // Trả về đường dẫn avatar mới
+  }
 
-  return profile;
+  return profile
 }
 
 async function changePassword(userId, currentPassword, newPassword) {
-  const user = await userRepo.findUserById(userId);
+  const user = await userRepo.findUserById(userId)
 
   if (!user) {
-    throw new Error("Đã xảy ra lỗi hệ thống.");
+    throw new Error('Đã xảy ra lỗi hệ thống.')
   }
 
-  const isMatch = await comparePassword(currentPassword, user.password);
+  const isMatch = await comparePassword(currentPassword, user.password)
 
   if (!isMatch) {
-    throw new Error("Mật khẩu hiện tại không chính xác.");
+    throw new Error('Mật khẩu hiện tại không chính xác.')
   }
 
   if (currentPassword === newPassword) {
-    throw new Error("Mật khẩu mới phải khác mật khẩu hiện tại.");
+    throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại.')
   }
 
-  const newHashedPassword = await hashPassword(newPassword);
+  const newHashedPassword = await hashPassword(newPassword)
 
-  const updatedUser = await userRepo.updatePassword(userId, newHashedPassword);
+  const updatedUser = await userRepo.updatePassword(userId, newHashedPassword)
 
-  return updatedUser;
+  return updatedUser
 }
 
-export default { getUserProfile, updateProfile, changePassword };
+export default { getUserProfile, updateProfile, changePassword }

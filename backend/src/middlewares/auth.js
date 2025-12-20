@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import ApiError from '../utils/api-error.js'
+import ApiError from '@/utils/api-error.js'
 
 export const authMiddleware = (req, res, next) => {
   // Whitelist paths that do not require authentication

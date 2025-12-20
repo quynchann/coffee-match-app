@@ -1,0 +1,388 @@
+import 'dotenv/config'
+import Shop from '@/models/Shop.js'
+
+const rawShops = [
+  {
+    id: 1,
+    name: 'Highlands Coffee',
+    rating: 4.5,
+    hours: '7:00 ~ 23:00',
+    address: '16 Le Thanh Nghi',
+    area: 'hbt',
+    purpose: 'study',
+    lat: 21.0045,
+    lng: 105.8412,
+    description:
+      '広くて開放的な空間で、グループ作業や勉強に最適です。Wi-Fiが強く、電源コンセントも多く設置されています。',
+    phone: '090-1234-5678',
+    priceRange: '50000-100000',
+    amenities: ['wifi', 'parking', 'quiet', 'ac', 'outdoor'],
+    features: [
+      '高速無料Wi-Fi',
+      'エアコン完備',
+      '広い駐車スペース',
+      '軽食あり',
+      'カード決済対応'
+    ],
+    images: [
+      'https://media.vneconomy.vn/1200x630/images/upload/2021/04/20/highland-coffee-15641309357751048105759-crop-156413094980996963270.jpg',
+      'https://dn.baophapluat.vn/images/upload/nhanpham/09082025/dsc00995-750x468.jpg',
+      'https://aeonmall-hadong.com.vn/wp-content/uploads/2019/08/dsc00991-750x468.jpg'
+    ],
+    menu: [
+      {
+        name: 'Phin Sữa Đá',
+        price: '29.000đ',
+        image:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUKtlhRUNzksfbbzUGBkelT0MxrnhjU-sExw&s'
+      },
+      {
+        name: 'Trà Sen Vàng',
+        price: '45.000đ',
+        image:
+          'https://www.highlandscoffee.com.vn/vnt_upload/product/06_2023/HLC_New_logo_5.1_Products__TSV.jpg'
+      },
+      {
+        name: 'Freeze Trà Xanh',
+        price: '55.000đ',
+        image:
+          'https://noithatcaphe.vn/images/2022/07/14/freeze-tra-xanh-highlands-coffee-%201.jpg'
+      },
+      {
+        name: 'Phindi Matcha Dâu',
+        price: '69.000đ',
+        image:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ3vyOozc6PQCP2JT76rSvHZ05NkRYeKzXHQ&s'
+      },
+      {
+        name: 'Cà Phê Phin Đen Đá',
+        price: '29.000đ',
+        image:
+          'https://bizweb.dktcdn.net/100/487/455/products/phin-den-da-1698982738181.jpg?v=1724205162483'
+      },
+      {
+        name: 'Trà Thạch Vải',
+        price: '49.000đ',
+        image:
+          'https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/3_MENU_NGUYEN_BAN/Tra_Thach_Vai.jpg'
+      },
+      {
+        name: 'Freeze Socola',
+        price: '55.000đ',
+        image:
+          'https://www.highlandscoffee.com.vn/vnt_upload/product/04_2023/New_product/HLC_New_logo_5.1_Products__FREEZE_CHOCO.jpg'
+      }
+    ],
+    reviews: [
+      {
+        id: 1,
+        user: 'Minh Anh',
+        date: '2023/10/20',
+        rating: 5,
+        content:
+          '店内は綺麗で、スタッフもフレンドリー。ドリンクも美味しいです！'
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: 'The Coffee House',
+    rating: 4.8,
+    hours: '8:00 ~ 22:30',
+    address: '23 Ba Trieu',
+    area: 'hk',
+    purpose: 'work',
+    lat: 21.0227,
+    lng: 105.8513,
+    description:
+      'モダンで若々しいデザイン。オフィスワーカーやフリーランサーに最適な場所です。',
+    phone: '024-3939-3939',
+    priceRange: '30000-70000',
+    features: [
+      '静かな空間',
+      '非常に強いWi-Fi',
+      '快適なソファ席',
+      '中心地に近い'
+    ],
+    images: [
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?q=80&w=1000&auto=format&fit=crop'
+    ],
+    menu: [
+      {
+        name: 'Cà Phê Sữa Đá',
+        price: '35.000đ',
+        image:
+          'https://file.hstatic.net/1000075078/file/blog_adda9e9ccb2a495fb063ec50f0af8cda_grande.jpg'
+      },
+      {
+        name: 'Trà Đào Cam Sả',
+        price: '49.000đ',
+        image:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_CWCFnEM4SZQzXLSomUMx8M0t8wwNj53yUQ&s'
+      },
+      {
+        name: 'Olong Hạt Sen',
+        price: '52.000đ',
+        image:
+          'https://winci.com.vn/wp-content/uploads/2024/02/Tra-Long-Nhan-Hat-Sen.webp'
+      }
+    ],
+    reviews: []
+  },
+  {
+    id: 3,
+    name: 'Starbucks Indochina',
+    rating: 4.9,
+    hours: '7:30 ~ 22:00',
+    address: '241 Xuan Thuy',
+    area: 'cg',
+    purpose: 'work',
+    lat: 21.0405,
+    lng: 105.7989,
+    description:
+      '世界的ブランドでプロフェッショナルなサービス基準。高級感のある空間です。',
+    phone: '024-7777-8888',
+    priceRange: '100000-200000',
+    amenities: ['wifi', 'ac', 'quiet', 'power'],
+    features: ['国際ブランド', '高級感ある空間', '多様なドリンクメニュー'],
+    images: [
+      'https://vcdn1-kinhdoanh.vnecdn.net/2025/11/04/starbucks-china-1762230665-9707-1762230777.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=T6ScN8umeQxPYtISEatCeQ'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 4,
+    name: 'All Day Coffee',
+    rating: 4.6,
+    hours: '8:00 ~ 23:00',
+    address: '37 Quang Trung',
+    area: 'hk',
+    purpose: 'date',
+    lat: 21.0178,
+    lng: 105.8469,
+    description: '温かくロマンチックな空間で、デートにぴったりのカフェです。',
+    phone: '098-765-4321',
+    priceRange: '70000-150000',
+    amenities: ['wifi', 'ac', 'music', 'outdoor'],
+    features: ['ロマンチックな雰囲気', '穏やかな音楽', '美しい装飾'],
+    images: [
+      'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1000&auto=format&fit=crop'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 5,
+    name: 'Tranquil Books',
+    rating: 5.0,
+    hours: '8:00 ~ 22:00',
+    address: '5 Nguyen Quang Bich',
+    area: 'hk',
+    purpose: 'study',
+    lat: 21.0311,
+    lng: 105.8516,
+    description: '静かなブックカフェで、本の世界に没頭できる空間です。',
+    phone: '091-234-5678',
+    priceRange: '40000-80000',
+    amenities: ['wifi', 'quiet', 'power', 'books'],
+    features: ['豊富な本', '完全な静けさ', 'レトロな雰囲気'],
+    images: [
+      'https://cdn.xanhsm.com/2025/01/ace7a67d-tranquil-books-coffee-1.jpg'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 6,
+    name: 'Cộng Cà Phê',
+    rating: 4.4,
+    hours: '7:00 ~ 23:30',
+    address: '116 Cau Go',
+    area: 'hk',
+    purpose: 'relax',
+    lat: 21.0298,
+    lng: 105.8536,
+    description: '独特なレトロスタイルで、古きハノイを感じられる空間です。',
+    phone: '024-3333-4444',
+    priceRange: '30000-60000',
+    amenities: ['wifi', 'outdoor', 'vintage'],
+    features: [
+      'レトロスタイル',
+      'ココナッツクリームの特製ドリンク',
+      '眺めの良い席'
+    ],
+    images: [
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmYI2nfmM4rBAPbGeqXbVgzjgOKVyg3s3JTg&s'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 7,
+    name: 'Là Việt Coffee',
+    rating: 4.7,
+    hours: '7:00 ~ 22:00',
+    address: '3 Ngo Quyen',
+    area: 'hk',
+    purpose: 'work',
+    lat: 21.0267,
+    lng: 105.8523,
+    description: 'ダラット産の高品質コーヒー、インダストリアル空間が魅力。',
+    phone: '090-999-8888',
+    priceRange: '50000-100000',
+    amenities: ['wifi', 'power', 'ac', 'quiet'],
+    features: ['純粋なコーヒー', '開放的な空間', '仕事向け'],
+    images: [
+      'https://vietair.com.vn/Media/Images/la-viet-coffee-menu.jpg?w=1200&h=630&c=true'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 8,
+    name: 'Phúc Long',
+    rating: 4.2,
+    hours: '8:00 ~ 22:00',
+    address: '82 Hang Dieu',
+    area: 'hk',
+    purpose: 'relax',
+    lat: 21.0334,
+    lng: 105.8512,
+    description: '伝統的な味わいの茶とコーヒーが有名です。',
+    phone: '1800-6779',
+    priceRange: '40000-90000',
+    amenities: ['wifi', 'ac', 'parking'],
+    features: ['深い味の紅茶', '迅速なサービス', '便利な立地'],
+    images: [
+      'https://statics.vincom.com.vn/vincom-ho/gioi-thieu-1657095406.jpg'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 9,
+    name: 'Maison de Blanc',
+    rating: 4.8,
+    hours: '9:00 ~ 21:00',
+    address: '5 Tay Ho',
+    area: 'bd',
+    purpose: 'date',
+    lat: 21.0545,
+    lng: 105.8234,
+    description: 'ヨーロッパ風の白い邸宅で、広い庭付きの高級カフェです。',
+    phone: '024-6666-7777',
+    priceRange: '150000-300000',
+    amenities: ['wifi', 'outdoor', 'ac', 'parking', 'luxury'],
+    features: ['フランス建築', '庭園スペース', '美味しいスイーツ'],
+    images: [
+      'https://oms.hotdeal.vn/images/editors/sources/000367901728/367901-367901-Maison-de-Blanc-Set-Au-Happy-New-Year-Cho-2-Nguoi-body-chung(8).jpg'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 10,
+    name: 'Twitter Beans',
+    rating: 4.3,
+    hours: '7:00 ~ 22:00',
+    address: '56 Vu Trong Phung',
+    area: 'cg',
+    purpose: 'study',
+    lat: 21.0021,
+    lng: 105.8156,
+    description: '学生に人気の便利なカフェスタイル。',
+    phone: '1900-1234',
+    priceRange: '20000-50000',
+    amenities: ['wifi', 'power', 'ac', 'spacious'],
+    features: ['手頃な価格', '安定したWi-Fi', '座席数が多い'],
+    images: [
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1000&auto=format&fit=crop'
+    ],
+    menu: [],
+    reviews: []
+  },
+  {
+    id: 11,
+    name: 'Kafa Café',
+    rating: 4.1,
+    hours: '7:00 ~ 23:00',
+    address: '101 Ba Trieu',
+    area: 'hbt',
+    purpose: 'relax',
+    lat: 21.0189,
+    lng: 105.8501,
+    description:
+      'ハノイらしいストリートコーヒーで、街並みを眺めながら楽しめます。',
+    phone: '098-888-8888',
+    priceRange: '15000-40000',
+    amenities: ['outdoor', 'street'],
+    features: ['ストリートコーヒー', '歩道席あり', '涼しい空間'],
+    images: [
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1000&auto=format&fit=crop'
+    ],
+    menu: [],
+    reviews: []
+  }
+]
+
+// Hàm chuyển đổi giá từ string "29.000đ" -> number 29000
+const parsePrice = (priceStr) => {
+  if (!priceStr) return 0
+  return Number(priceStr.replace(/[^\d]/g, ''))
+}
+
+// Hàm chuyển đổi giờ "7:00 ~ 23:00" -> object
+const parseHours = (hoursStr) => {
+  if (!hoursStr) return { open: '', close: '' }
+  const [open, close] = hoursStr.split(' ~ ')
+  return { open: open || '', close: close || '' }
+}
+
+// Hàm chuyển đổi khoảng giá "50000-100000" -> object
+const parsePriceRange = (rangeStr) => {
+  if (!rangeStr) return { min: 0, max: 0 }
+  const [min, max] = rangeStr.split('-')
+  return { min: Number(min), max: Number(max) }
+}
+
+const seedShops = async () => {
+  try {
+    await Shop.deleteMany()
+    console.log('Shops cleared')
+
+    const shops = rawShops.map((shop) => ({
+      name: shop.name,
+      purpose: [shop.purpose], // Model yêu cầu mảng
+      amenities: shop.amenities || [],
+      features: shop.features || [],
+      hours: parseHours(shop.hours),
+      location: {
+        type: 'Point',
+        coordinates: [shop.lng, shop.lat] // GeoJSON yêu cầu [Longitude, Latitude]
+      },
+      address: shop.address,
+      area: shop.area,
+      priceRange: parsePriceRange(shop.priceRange),
+      description: shop.description,
+      phone: shop.phone,
+      images: shop.images || [],
+      menu: (shop.menu || []).map((item) => ({
+        name: item.name,
+        price: parsePrice(item.price),
+        image: item.image
+      })),
+      rating: shop.rating, // Giữ rating ban đầu từ JSON
+      totalReviews: shop.reviews ? shop.reviews.length : 0
+    }))
+
+    await Shop.insertMany(shops)
+    console.log('Shops added')
+  } catch (error) {
+    console.error(`Error seeding shops: ${error}`)
+    throw error
+  }
+}
+
+export default seedShops

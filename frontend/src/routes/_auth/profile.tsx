@@ -9,10 +9,12 @@ export const Route = createFileRoute('/_auth/profile')({
 
 function Profile() {
   return (
-    <>
-      <Header isAuthenticated={true} />
-      <ProfilePage />
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex-1">
+        <ProfilePage />
+      </main>
       <Footer />
-    </>
+    </div>
   )
 }

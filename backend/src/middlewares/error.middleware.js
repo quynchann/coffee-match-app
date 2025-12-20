@@ -1,4 +1,4 @@
-import ApiError from '../utils/api-error.js'
+import ApiError from '@/utils/api-error.js'
 
 export const errorConverter = (err, req, res, next) => {
   let error = err
