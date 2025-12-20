@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Star, Trash2, X, Clock, MapPin, Bookmark, Check } from 'lucide-react'
+import { Star, Trash2, Clock, MapPin, Bookmark, Check } from 'lucide-react'
 // Cập nhật đường dẫn import đến thư mục data
 import CAFE_DATA from '../data/cafes.json'
 
@@ -35,7 +35,7 @@ const transformDataToHistory = (): HistoryGroup[] => {
     address: item.address,
     rating: item.rating,
     isSaved: item.id % 3 === 0,
-    image: item.images[0], // Lấy ảnh đầu tiên từ mảng images trong JSON
+    image: (item as any).images?.[0] ?? (item as any).image ?? '', // Lấy ảnh đầu tiên, fallback nếu chỉ có `image`
   }))
 
   const yesterdayItems = CAFE_DATA.slice(5, 12).map((item, index) => ({
@@ -46,7 +46,7 @@ const transformDataToHistory = (): HistoryGroup[] => {
     address: item.address,
     rating: item.rating,
     isSaved: item.id % 4 === 0,
-    image: item.images[0],
+    image: (item as any).images?.[0] ?? (item as any).image ?? '',
   }))
 
   const olderItems = CAFE_DATA.slice(12).map((item, index) => ({
@@ -57,7 +57,7 @@ const transformDataToHistory = (): HistoryGroup[] => {
     address: item.address,
     rating: item.rating,
     isSaved: false,
-    image: item.images[0],
+    image: (item as any).images?.[0] ?? (item as any).image ?? '',
   }))
 
   return [
