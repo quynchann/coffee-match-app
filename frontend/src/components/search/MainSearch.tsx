@@ -24,7 +24,7 @@ const MainContent: React.FC<MainContentProps> = ({
   userLocation,
   showDistance,
 }) => {
-  const ITEMS_PER_PAGE = 9
+  const ITEMS_PER_PAGE = 12
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1
 
   const handlePrev = () => {
@@ -73,7 +73,7 @@ const MainContent: React.FC<MainContentProps> = ({
       </div>
 
       {cafes.length > 0 ? (
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {cafes.map((item) => (
             <CafeCard
               key={item.id}

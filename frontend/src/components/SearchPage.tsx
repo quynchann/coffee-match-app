@@ -149,7 +149,7 @@ export default function SearchPage({
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [filters, initialKeyword, sortBy])
 
-  const ITEMS_PER_PAGE = 9
+  const ITEMS_PER_PAGE = 12
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem)

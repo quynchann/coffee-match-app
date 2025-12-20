@@ -259,7 +259,7 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                   <div
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
-                    className={`w-1/${thumbItemsPerPage} shrink-0 px-2`}>
+                    className={`w-1/4 shrink-0 px-2`}>
                     <div
                       className={`flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-lg border bg-gray-100 transition ${currentImageIndex === idx ? 'border-[#F26546] ring-2 ring-[#F26546]/20' : 'border-gray-100 hover:shadow-md'}`}>
                       <img
@@ -302,9 +302,7 @@ const MainDetail: React.FC<{ cafe: Cafe }> = ({ cafe }) => {
                 className="flex transition-transform duration-300"
                 style={{ transform: `translateX(-${menuPageIndex * 100}%)` }}>
                 {cafe.menu.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-1/${menuItemsPerPage} shrink-0 px-2`}>
+                  <div key={idx} className={`w-1/4 shrink-0 px-2`}>
                     <div className="rounded-lg border border-gray-100 bg-white p-2 shadow-sm transition hover:shadow-md">
                       <div className="peer relative mb-2 flex aspect-video items-center justify-center overflow-hidden rounded-md bg-gray-50">
                         <span className="absolute top-2 right-2 z-10 rounded-full bg-[#F26546] px-2 py-0.5 text-xs font-bold text-white shadow-sm">

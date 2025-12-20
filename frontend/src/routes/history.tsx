@@ -10,7 +10,7 @@ export const Route = createFileRoute('/history')({
 function History() {
   return (
     <div className="text-center">
-      <Header isAuthenticated={true} />
+      <Header />
       <HistoryPage />
       <Footer />
     </div>

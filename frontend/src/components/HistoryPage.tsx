@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Star, Trash2, X, Clock, MapPin, Bookmark, Check } from 'lucide-react'
+import { Bookmark, Check, Clock, MapPin, Star, Trash2 } from 'lucide-react'
 // Cập nhật đường dẫn import đến thư mục data
 import CAFE_DATA from '../data/cafes.json'
 
@@ -17,14 +17,14 @@ interface CafeItem {
 
 interface HistoryGroup {
   date: string
-  items: CafeItem[]
+  items: Array<CafeItem>
 }
 
 /**
  * Hàm hỗ trợ chuyển đổi dữ liệu từ file JSON trong thư mục data
  * sang cấu trúc phân nhóm cho giao diện lịch sử.
  */
-const transformDataToHistory = (): HistoryGroup[] => {
+const transformDataToHistory = (): Array<HistoryGroup> => {
   // Nhóm các quán cafe dựa trên dữ liệu từ cafes.json
 
   const todayItems = CAFE_DATA.slice(0, 5).map((item, index) => ({
@@ -70,7 +70,7 @@ const transformDataToHistory = (): HistoryGroup[] => {
 export default function HistoryPage() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   // Khởi tạo state từ dữ liệu đã được xử lý
-  const [history, setHistory] = useState<HistoryGroup[]>(() =>
+  const [history, setHistory] = useState<Array<HistoryGroup>>(() =>
     transformDataToHistory(),
   )
 
@@ -84,7 +84,7 @@ export default function HistoryPage() {
     setSelectedIds(newSelected)
   }
 
-  const toggleGroup = (groupItems: CafeItem[]) => {
+  const toggleGroup = (groupItems: Array<CafeItem>) => {
     const groupIds = groupItems.map((item) => item.id)
     const allGroupSelected = groupIds.every((id) => selectedIds.has(id))
 
@@ -114,21 +114,21 @@ export default function HistoryPage() {
   const hasSelection = selectedIds.size > 0
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] text-zinc-800 font-sans pb-32">
-      <main className="max-w-[96%] mx-auto p-4 md:p-8 space-y-12">
-        <div className="text-center py-8">
-          <h1 className="text-3xl font-black tracking-tight text-zinc-800 inline-block relative">
+    <div className="min-h-screen bg-[#F9F9FB] pb-32 font-sans text-zinc-800">
+      <main className="mx-auto max-w-[96%] space-y-12 p-4 md:p-8">
+        <div className="py-8 text-center">
+          <h1 className="relative inline-block text-3xl font-black tracking-tight text-zinc-800">
             閲覧履歴
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-orange-500 rounded-full"></div>
+            <div className="absolute -bottom-2 left-1/2 h-1 w-12 -translate-x-1/2 rounded-full bg-orange-500"></div>
           </h1>
         </div>
 
         {history.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-orange-200">
-            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mb-6">
-              <Clock className="w-10 h-10" />
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-orange-50">
+              <Clock className="h-10 w-10" />
             </div>
-            <p className="font-bold text-xl text-orange-900/40">
+            <p className="text-xl font-bold text-orange-900/40">
               履歴はありません
             </p>
           </div>
@@ -139,95 +139,95 @@ export default function HistoryPage() {
 
             return (
               <section key={group.date} className="relative mb-12">
-                <div className="flex items-center justify-between sticky top-0 z-20 bg-[#F9F9FB]/95 backdrop-blur-md py-4 mb-4">
-                  <h2 className="text-xl md:text-2xl font-black text-zinc-800 tracking-tight">
+                <div className="sticky top-0 z-20 mb-4 flex items-center justify-between bg-[#F9F9FB]/95 py-4 backdrop-blur-md">
+                  <h2 className="text-xl font-black tracking-tight text-zinc-800 md:text-2xl">
                     {group.date}
                   </h2>
                   <button
                     onClick={() => toggleGroup(group.items)}
-                    className={`flex items-center gap-3 text-xs font-extrabold px-5 py-2.5 rounded-xl transition-all duration-300 ${
+                    className={`flex items-center gap-3 rounded-xl px-5 py-2.5 text-xs font-extrabold transition-all duration-300 ${
                       isGroupSelected
                         ? 'bg-orange-600 text-white shadow-lg'
-                        : 'bg-white text-orange-600 border border-orange-200'
+                        : 'border border-orange-200 bg-white text-orange-600'
                     }`}>
                     {isGroupSelected ? '選択解除' : 'すべて選択'}
                     <div
-                      className={`w-4 h-4 rounded border flex items-center justify-center ${
+                      className={`flex h-4 w-4 items-center justify-center rounded border ${
                         isGroupSelected
-                          ? 'bg-white border-white'
+                          ? 'border-white bg-white'
                           : 'border-orange-300 bg-orange-50'
                       }`}>
                       {isGroupSelected && (
-                        <Check className="w-3 h-3 text-orange-600 stroke-4" />
+                        <Check className="h-3 w-3 stroke-4 text-orange-600" />
                       )}
                     </div>
                   </button>
                 </div>
 
-                <div className="bg-white rounded-4xl md:rounded-[40px] p-3 md:p-6 border border-orange-400/40 shadow-sm">
+                <div className="rounded-4xl border border-orange-400/40 bg-white p-3 shadow-sm md:rounded-[40px] md:p-6">
                   <div className="grid gap-4 md:gap-6">
                     {group.items.map((item) => {
                       const isSelected = selectedIds.has(item.id)
                       return (
                         <div
                           key={item.id}
-                          className={`group relative bg-white rounded-3xl overflow-hidden shadow-sm border transition-all duration-500 flex items-stretch min-h-[140px] ${
+                          className={`group relative flex min-h-[140px] items-stretch overflow-hidden rounded-3xl border bg-white shadow-sm transition-all duration-500 ${
                             isSelected
-                              ? 'border-orange-400 ring-4 ring-orange-500/5 shadow-xl'
+                              ? 'border-orange-400 shadow-xl ring-4 ring-orange-500/5'
                               : 'border-[#F9F9FB] hover:border-orange-100 hover:shadow-xl'
                           }`}>
-                          <div className="w-24 sm:w-32 shrink-0 flex items-center justify-center px-2 md:px-4 border-r border-gray-100 bg-gray-50/50 gap-3">
+                          <div className="flex w-24 shrink-0 items-center justify-center gap-3 border-r border-gray-100 bg-gray-50/50 px-2 sm:w-32 md:px-4">
                             <div
                               onClick={() => toggleSelect(item.id)}
                               className="cursor-pointer">
                               <div
-                                className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
+                                className={`flex h-6 w-6 items-center justify-center rounded-md border-2 transition-all ${
                                   isSelected
-                                    ? 'bg-orange-600 border-orange-600 shadow-md'
-                                    : 'bg-white border-gray-200'
+                                    ? 'border-orange-600 bg-orange-600 shadow-md'
+                                    : 'border-gray-200 bg-white'
                                 }`}>
                                 {isSelected && (
-                                  <Check className="w-4 h-4 text-white stroke-4" />
+                                  <Check className="h-4 w-4 stroke-4 text-white" />
                                 )}
                               </div>
                             </div>
-                            <span className="text-xs md:text-base font-black font-mono text-zinc-800">
+                            <span className="font-mono text-xs font-black text-zinc-800 md:text-base">
                               {item.time}
                             </span>
                           </div>
 
-                          <div className="relative w-24 sm:w-40 shrink-0 overflow-hidden m-2 md:m-3 rounded-[18px]">
+                          <div className="relative m-2 w-24 shrink-0 overflow-hidden rounded-[18px] sm:w-40 md:m-3">
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
                           </div>
 
-                          <div className="flex-1 p-3 md:p-5 pl-2 flex flex-col justify-center min-w-0">
-                            <div className="flex justify-between items-start gap-2 mb-2">
-                              <h3 className="font-black text-sm md:text-lg text-zinc-800 truncate">
+                          <div className="flex min-w-0 flex-1 flex-col justify-center p-3 pl-2 md:p-5">
+                            <div className="mb-2 flex items-start justify-between gap-2">
+                              <h3 className="truncate text-sm font-black text-zinc-800 md:text-lg">
                                 {item.name}
                               </h3>
                               <div className="flex items-center gap-1 md:gap-2">
-                                <div className="flex items-center bg-orange-600 text-white px-1.5 py-0.5 rounded-lg">
-                                  <span className="text-[10px] md:text-xs font-black">
+                                <div className="flex items-center rounded-lg bg-orange-600 px-1.5 py-0.5 text-white">
+                                  <span className="text-[10px] font-black md:text-xs">
                                     {item.rating}
                                   </span>
-                                  <Star className="w-3 h-3 fill-current ml-0.5" />
+                                  <Star className="ml-0.5 h-3 w-3 fill-current" />
                                 </div>
                                 <Bookmark
-                                  className={`w-4 h-4 md:w-5 ${item.isSaved ? 'text-orange-500 fill-current' : 'text-gray-200'}`}
+                                  className={`h-4 w-4 md:w-5 ${item.isSaved ? 'fill-current text-orange-500' : 'text-gray-200'}`}
                                 />
                               </div>
                             </div>
-                            <div className="space-y-1 mt-auto text-[10px] md:text-xs text-zinc-800 font-medium">
+                            <div className="mt-auto space-y-1 text-[10px] font-medium text-zinc-800 md:text-xs">
                               <div className="flex items-center gap-2">
-                                <Clock className="w-3 h-3 text-orange-500" />
+                                <Clock className="h-3 w-3 text-orange-500" />
                                 <span>{item.hours}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <MapPin className="w-3 h-3 text-orange-500" />
+                                <MapPin className="h-3 w-3 text-orange-500" />
                                 <span className="truncate">{item.address}</span>
                               </div>
                             </div>
@@ -244,24 +244,24 @@ export default function HistoryPage() {
       </main>
 
       {hasSelection && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-xl">
-          <div className="bg-zinc-900 text-white rounded-4xl p-4 flex items-center justify-between border border-white/10 shadow-2xl">
+        <div className="fixed bottom-8 left-1/2 z-40 w-[94%] max-w-xl -translate-x-1/2">
+          <div className="flex items-center justify-between rounded-4xl border border-white/10 bg-zinc-900 p-4 text-white shadow-2xl">
             <div className="flex items-center gap-4 pl-3">
-              <span className="flex items-center justify-center bg-orange-500 text-white w-9 h-9 rounded-xl text-sm font-black">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500 text-sm font-black text-white">
                 {selectedIds.size}
               </span>
-              <p className="hidden sm:block text-sm font-black">選択中</p>
+              <p className="hidden text-sm font-black sm:block">選択中</p>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={deselectAll}
-                className="px-4 py-2 text-xs font-extrabold bg-white/10 rounded-2xl">
+                className="rounded-2xl bg-white/10 px-4 py-2 text-xs font-extrabold">
                 キャンセル
               </button>
               <button
                 onClick={deleteSelected}
-                className="flex items-center gap-2 px-6 py-2 text-xs font-black bg-orange-500 rounded-2xl">
-                <Trash2 className="w-4 h-4" />
+                className="flex items-center gap-2 rounded-2xl bg-orange-500 px-6 py-2 text-xs font-black">
+                <Trash2 className="h-4 w-4" />
                 削除
               </button>
             </div>

@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { useForm } from '@tanstack/react-form'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { useAuthStore } from '../stores/useAuthStore'
+import { X } from 'lucide-react'
 import type { AnyFieldApi } from '@tanstack/react-form'
+import { useAuthStore } from '@/stores/useAuthStore'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -66,13 +67,17 @@ export function SignInForm({
 
   return (
     <form
-      className={cn('flex flex-col gap-6', className)}
+      className={cn('relative flex flex-col gap-6', className)}
       onSubmit={(e) => {
         e.preventDefault()
         e.stopPropagation()
         form.handleSubmit()
       }}
       {...props}>
+      <Link to="/" className="absolute -top-5 -right-5 hover:opacity-80">
+        <X size={20} />
+      </Link>
+
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">ログイン</h1>
