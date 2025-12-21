@@ -83,13 +83,14 @@ async function signin({ email, password, deviceInfo }) {
 
     const tokens = await generateTokens(user, deviceInfo)
 
+    const safeUser = user.toObject()
+    delete safeUser.password
+    delete safeUser.createdAt
+    delete safeUser.updatedAt
+    delete safeUser.__v
+
     return {
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        styles: user.styles
-      },
+      user: safeUser,
       ...tokens
     }
   } catch (error) {

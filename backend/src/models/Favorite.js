@@ -2,13 +2,13 @@ import mongoose from 'mongoose'
 
 const FavoriteSchema = new mongoose.Schema(
   {
-    user: {
+    user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
       index: true
     },
-    shop: {
+    shop_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Shop',
       required: true,
@@ -21,7 +21,7 @@ const FavoriteSchema = new mongoose.Schema(
 )
 
 // prevent duplicate favorites for same user/shop
-FavoriteSchema.index({ user: 1, shop: 1 }, { unique: true })
+FavoriteSchema.index({ user_id: 1, shop_id: 1 }, { unique: true })
 
 const Favorite = mongoose.model('Favorite', FavoriteSchema)
 

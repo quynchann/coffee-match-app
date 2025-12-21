@@ -3,12 +3,12 @@ const Shop = require('./Shop')
 
 const ReviewSchema = new mongoose.Schema(
   {
-    user: {
+    user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
-    shop: {
+    shop_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Shop',
       required: true,
@@ -33,14 +33,14 @@ const ReviewSchema = new mongoose.Schema(
 
 // Tự động tính lại điểm trung bình cho Shop sau khi lưu Review mới
 ReviewSchema.post('save', async function () {
-  const shopId = this.shop
+  const shopId = this.shop_id
 
   // Tính toán lại bằng Aggregation
   const result = await this.constructor.aggregate([
-    { $match: { shop: shopId } },
+    { $match: { shop_id: shopId } },
     {
       $group: {
-        _id: '$shop',
+        _id: '$shop_id',
         avgRating: { $avg: '$rating' },
         count: { $sum: 1 }
       }

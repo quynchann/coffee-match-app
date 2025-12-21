@@ -2,13 +2,12 @@ import mongoose from 'mongoose'
 
 const HistorySchema = new mongoose.Schema(
   {
-    user: {
+    user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
-      index: true
+      required: true
     },
-    shop: {
+    shop_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Shop',
       required: true,
@@ -20,8 +19,8 @@ const HistorySchema = new mongoose.Schema(
   }
 )
 
-// index to query recent history per user quickly
-HistorySchema.index({ user: 1, createdAt: -1 })
+// createdAt DESC, _id DESC for each user
+HistorySchema.index({ user_id: 1, createdAt: -1, _id: -1 })
 
 const History = mongoose.model('History', HistorySchema)
 
