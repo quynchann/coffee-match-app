@@ -3,6 +3,7 @@ import FilterSidebar from './search/filter/FilterSidebar'
 import MainContent from './search/MainSearch'
 import SelectLocationMap from './search/SelectLocationMap'
 import { getShopBySearch } from '@/services/search.api'
+import { ITEMS_PER_PAGE } from '@/util/constant'
 
 type LocationSource = 'gps' | 'manual'
 
@@ -18,6 +19,13 @@ interface SelectedLocation {
   lat: number
   lng: number
   source: LocationSource
+}
+
+interface Meta {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
 }
 
 export default function SearchPage({
@@ -52,6 +60,7 @@ export default function SearchPage({
   const [shops, setShops] = useState<Array<IShop>>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const [meta, setMeta] = useState<Meta | null>(null)
 
   // Fetch data từ API
   const fetchShops = async () => {
@@ -69,15 +78,14 @@ export default function SearchPage({
         min_price: filters.priceMin || undefined,
         max_price: filters.priceMax || undefined,
         page: currentPage,
-        limit: 12,
+        limit: ITEMS_PER_PAGE,
         sortRating: sortBy === 'rating',
         lat: sortBy === 'distance' ? userLocation?.lat : undefined,
         lng: sortBy === 'distance' ? userLocation?.lng : undefined,
       }
-      console.log('params', params)
       const response = await getShopBySearch(params)
-      // console.log("res", response.data.data)
       setShops(response.data.data ?? [])
+      setMeta(response.data.meta ?? null)
     } catch (err) {
       setError('Lỗi khi tải dữ liệu')
       console.error('Error fetching shops:', err)
@@ -109,28 +117,24 @@ export default function SearchPage({
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [filters, initialKeyword, sortBy])
 
-  const totalItems = shops.length
-
   const requestUserLocation = () => {
     setIsLocating(true)
 
-    // Cấu hình để ép buộc sử dụng GPS và độ chính xác cao nhất
     const geoOptions = {
-      enableHighAccuracy: true, // QUAN TRỌNG: Sử dụng GPS thay vì IP/Wifi
-      timeout: 15000, // Chờ tối đa 15 giây (GPS cần thời gian để lock vệ tinh)
-      maximumAge: 0, // Luôn lấy vị trí mới, không lấy từ bộ nhớ đệm
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0,
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords
         setUserLocation({ lat: latitude, lng: longitude })
-        console.log(`Đã lấy vị trí chính xác :`, latitude, longitude)
         setIsLocating(false)
       },
       (err) => {
         setIsLocating(false)
-        console.error('Lỗi lấy vị trí:', err)
+        console.error('Lỗi: ', err)
         if (!userLocation) {
           setUserLocation({ lat: 21.0285, lng: 105.8542 })
         }
@@ -177,7 +181,7 @@ export default function SearchPage({
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           cafes={shops}
-          totalItems={totalItems}
+          totalPages={meta?.totalPages ?? 1}
           sortBy={sortBy}
           onSortChange={handleSortChange}
           userLocation={userLocation}
@@ -185,7 +189,7 @@ export default function SearchPage({
           loading={loading}
         />
       </div>
-      <button onClick={() => setIsOpenMap(true)}>
+      {/* <button onClick={() => setIsOpenMap(true)}>
         📍 Chọn vị trí trên bản đồ
       </button>
       {isOpenMap && (
@@ -202,7 +206,7 @@ export default function SearchPage({
             }}
           />
         </div>
-      )}
+      )} */}
     </div>
   )
 }

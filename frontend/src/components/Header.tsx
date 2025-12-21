@@ -185,6 +185,11 @@ export default function Header() {
                     プロフィール
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/favorite" className="block w-full">
+                    お気に入り
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={signout} className="cursor-pointer">
                   ログアウト
                 </DropdownMenuItem>

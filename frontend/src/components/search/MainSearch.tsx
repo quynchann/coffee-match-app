@@ -1,6 +1,13 @@
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import CafeCard from '../cafe/CafeCard'
 import PaginationButton from '../pagination/PaginationButtonProps'
+import { useAuthStore } from '@/stores/useAuthStore'
+import {
+  deleteFavorite,
+  getFavoriteByUserId,
+  postFavorite,
+} from '@/services/favorite.api'
 
 type SortType = 'distance' | 'rating' | null
 
@@ -8,28 +15,26 @@ interface MainContentProps {
   currentPage: number
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>
   cafes: Array<IShop>
-  totalItems: number
   sortBy: SortType
   onSortChange: (type: 'distance' | 'rating') => void
   userLocation: { lat: number; lng: number } | null
   showDistance: boolean
   loading?: boolean
+  totalPages: number
 }
 
 const MainContent: React.FC<MainContentProps> = ({
   currentPage,
   setCurrentPage,
   cafes,
-  totalItems,
   sortBy,
   onSortChange,
   userLocation,
   showDistance,
   loading = false,
+  totalPages,
 }) => {
   // Vì API đã xử lý pagination, nên không cần slice dữ liệu
-  const ITEMS_PER_PAGE = 12
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1
 
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage((curr) => curr - 1)
@@ -43,6 +48,38 @@ const MainContent: React.FC<MainContentProps> = ({
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  const [favorites, setFavorites] = useState<Array<string>>([]) // Lưu mảng shop_id đã thích
+  const { user } = useAuthStore()
+  const handleToggle = async (shopId: string) => {
+    if (!user) return
+    const isFav = favorites.includes(shopId)
+    const previousFavorites = [...favorites]
+
+    try {
+      if (isFav) {
+        setFavorites((prev) => prev.filter((id) => id !== shopId))
+        await deleteFavorite(shopId)
+      } else {
+        setFavorites((prev) => [...prev, shopId])
+        await postFavorite(shopId)
+      }
+    } catch (error) {
+      setFavorites(previousFavorites)
+      console.error('Lỗi khi cập nhật yêu thích:', error)
+    }
+  }
+
+  // Load favorite list
+  useEffect(() => {
+    const loadFavorite = async () => {
+      const res = await getFavoriteByUserId()
+      if (res.data.success && res.data.data) {
+        setFavorites(res.data.data.map((f) => f.shop_id))
+      }
+    }
+    if (user) loadFavorite()
+  }, [user])
 
   return (
     <div className="flex-1">
@@ -58,7 +95,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={() => onSortChange('distance')}
             className={`flex-1 rounded px-8 py-1.5 text-sm font-bold transition sm:flex-none ${
-              sortBy === "distance"
+              sortBy === 'distance'
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -67,7 +104,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={() => onSortChange('rating')}
             className={`flex-1 rounded px-8 py-1.5 text-sm font-bold transition sm:flex-none ${
-              sortBy === "rating"
+              sortBy === 'rating'
                 ? 'bg-[#F26546] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
@@ -82,8 +119,10 @@ const MainContent: React.FC<MainContentProps> = ({
             <CafeCard
               key={item._id}
               data={item}
+              isFavorite={favorites.includes(item._id)}
               userLocation={userLocation}
               showDistance={showDistance}
+              handleToggle={handleToggle}
             />
           ))}
         </div>

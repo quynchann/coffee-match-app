@@ -1,6 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Bookmark, ImageIcon, Star } from 'lucide-react'
-import { useState } from 'react'
 
 const AREAS = [
   { id: 'hbt', label: 'Hai Ba Trung', jpLabel: 'ハイバーチュン区' },
@@ -9,24 +8,16 @@ const AREAS = [
   { id: 'bd', label: 'Ba Dinh', jpLabel: 'バーディン区' },
 ]
 
-const PURPOSES = [
-  { id: 'study', label: 'Hoc tap', jpLabel: '勉強' },
-  { id: 'work', label: 'Cong viec', jpLabel: '仕事' },
-  { id: 'date', label: 'Hen ho', jpLabel: 'デート' },
-  { id: 'relax', label: 'Thu gian', jpLabel: 'リラックス' },
-]
-
 const CafeCard: React.FC<{
   data: IShop
   userLocation: { lat: number; lng: number } | null
   showDistance: boolean
-}> = ({ data, userLocation, showDistance }) => {
+  isFavorite: boolean
+  handleToggle: (id: string) => void
+}> = ({ data, userLocation, showDistance, isFavorite, handleToggle }) => {
   const navigate = useNavigate()
-  const [isFavorite, setIsFavorite] = useState(false)
   const areaInfo = AREAS.find((a) => a.id === data.area)
-  // const purposeInfo = PURPOSES.find((p) => p.id === data.purpose)
 
-  // Calculate distance
   const calculateDistance = (
     lat1: number,
     lon1: number,
@@ -90,19 +81,13 @@ const CafeCard: React.FC<{
         <button
           onClick={(e) => {
             e.stopPropagation()
-            setIsFavorite(!isFavorite)
+            handleToggle(data._id)
           }}
           className={`absolute top-2 right-2 rounded-full p-1 shadow-sm transition ${
             isFavorite ? 'bg-white text-[#F26546]' : 'bg-white text-gray-400'
           }`}>
           <Bookmark size={16} fill={isFavorite ? '#F26546' : 'white'} />
         </button>
-
-        {/* {purposeInfo && (
-          <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-1 text-[10px] text-white backdrop-blur-sm">
-            {purposeInfo.jpLabel}
-          </div>
-        )} */}
       </div>
 
       <div className="flex flex-1 flex-col p-3">

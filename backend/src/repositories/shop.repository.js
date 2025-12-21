@@ -14,7 +14,7 @@ async function findShopByFilter(filters = {}) {
     lat,
     lng,
     page = 1,
-    limit = 10
+    limit = 8
   } = filters
 
   // Pagination
