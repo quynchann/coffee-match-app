@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import MainDetail from './detail/MainDetail'
 import { Route } from '@/routes/_guest/detail/$id'
@@ -43,7 +43,7 @@ const DetailPage = () => {
     )
   }
 
-  if (isError || !selectedCafe) {
+  if (error || !selectedCafe) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
         <div className="text-center text-[#ff6347]">
@@ -56,7 +56,9 @@ const DetailPage = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#F9F9F9] font-sans text-gray-800">
-      <MainDetail cafe={selectedCafe} shopId={shopId} />
+      <MainDetail cafe={selectedCafe} />
     </div>
   )
 }
+
+export default DetailPage

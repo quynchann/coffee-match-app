@@ -16,22 +16,14 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import ReviewForm from './ReviewForm'
 import { toast } from 'sonner'
+import ReviewForm from './ReviewForm'
 import SectionCard from './SectionCard'
 import FeatureItem from './FeatureItem'
-import type { Shop } from '@/types/shop'
 import type { Review } from '@/types/review'
 import { Badge } from '@/components/ui/badge'
 import { reviewAPI } from '@/services/review.api'
 
-export default function MainDetail({
-  cafe,
-  shopId,
-}: {
-  cafe: Shop
-  shopId: string
-}) {
 import { useAuthStore } from '@/stores/useAuthStore'
 import {
   deleteFavorite,
@@ -134,8 +126,8 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
   const filters = { page: 1, limit: 10 }
 
   const { data: reviewsData } = useQuery({
-    queryKey: ['reviews', filters, shopId],
-    queryFn: () => reviewAPI.getByShopId(filters, shopId),
+    queryKey: ['reviews', filters, cafe._id],
+    queryFn: () => reviewAPI.getByShopId(filters, cafe._id),
   })
   const reviews: Array<Review> = reviewsData?.data || []
 
@@ -387,7 +379,7 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
         itemsLength={1}
         itemsPerPage={1}>
         <>
-          <ReviewForm shopId={shopId} />
+          <ReviewForm shopId={cafe._id} />
 
           {reviews.length > 0 && (
             <div className="space-y-6">
@@ -444,3 +436,5 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
     </div>
   )
 }
+
+export default MainDetail
