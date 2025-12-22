@@ -76,7 +76,6 @@ async function removeFavorite(req, res) {
 async function getMyFavorites(req, res) {
   try {
     const userId = req.user.id
-    console.log('userId', userId)
 
     const { page, limit } = req.query
 
@@ -104,7 +103,6 @@ async function getMyFavorites(req, res) {
 async function checkFavoriteStatus(req, res) {
   try {
     const userId = req.user.id
-    console.log('userId', userId)
     const { shopId } = req.params
 
     const response = await favoriteService.handleCheckFavoriteStatus(

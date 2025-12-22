@@ -4,6 +4,25 @@ export async function createReview(data) {
   return await Review.create(data)
 }
 
+export async function findById(reviewId) {
+  return Review.findById(reviewId)
+}
+
+export async function updateById(reviewId, data) {
+  return Review.findByIdAndUpdate(
+    reviewId,
+    {
+      ...data,
+      updatedAt: new Date()
+    },
+    { new: true }
+  )
+}
+
+export async function deleteById(reviewId) {
+  return Review.findByIdAndDelete(reviewId)
+}
+
 export async function findReviewsByShopId(filters, shopId) {
   const { page = 1, limit = 10 } = filters
   const pageNum = parseInt(page) || 1

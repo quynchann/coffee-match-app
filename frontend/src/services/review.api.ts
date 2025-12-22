@@ -1,19 +1,10 @@
 import instance from './axios.customize.js'
 
 export const reviewAPI = {
-  create: async (
-    user_id: string | null,
-    shop_id: string,
-    rating: number,
-    content: string,
-    images: Array<string>,
-  ) => {
-    const res = await instance.post('/review', {
-      user_id,
-      shop_id,
-      rating,
-      content,
-      images,
+  create: async (payload: any) => {
+    // Lưu ý: payload ở đây là FormData
+    const res = await instance.post('/review', payload, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
     return res.data
   },
@@ -25,6 +16,18 @@ export const reviewAPI = {
     const res = await instance.get(`/review/${shopId}`, {
       params: filters,
     })
+    return res.data
+  },
+
+  update: async (reviewId: string, payload: FormData) => {
+    const res = await instance.put(`/review/${reviewId}`, payload, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return res.data
+  },
+
+  delete: async (reviewId: string) => {
+    const res = await instance.delete(`/review/${reviewId}`)
     return res.data
   },
 }

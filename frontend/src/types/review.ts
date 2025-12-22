@@ -1,4 +1,5 @@
 export interface Review {
+  _id: string
   userId: string | null
   user: {
     _id?: string

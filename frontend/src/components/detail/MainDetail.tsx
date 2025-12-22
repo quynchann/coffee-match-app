@@ -9,9 +9,11 @@ import {
   DollarSign,
   ImageIcon,
   MapPin,
+  Pencil,
   Phone,
   Share2,
   Star,
+  Trash2,
   User,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -23,6 +25,17 @@ import FeatureItem from './FeatureItem'
 import type { Review } from '@/types/review'
 import { Badge } from '@/components/ui/badge'
 import { reviewAPI } from '@/services/review.api'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 import { useAuthStore } from '@/stores/useAuthStore'
 import {
@@ -32,9 +45,20 @@ import {
 } from '@/services/favorite.api'
 
 const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
+  const [editingReview, setEditingReview] = useState<Review | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFavoriteStatus, setIsFavoriteStatus] = useState<boolean>(false)
+
+  // Delete review
+  const deleteMutation = useMutation({
+    mutationFn: (reviewId: string) => reviewAPI.delete(reviewId),
+    onSuccess: () => {
+      toast.success('レビューを削除しました')
+      refetchReviews()
+    },
+    onError: () => toast.error('削除に失敗しました'),
+  })
 
   // const [reviews, setReviews] = useState(cafe.reviews || [])
   const [pageIndex, setPageIndex] = useState(0)
@@ -125,7 +149,7 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
 
   const filters = { page: 1, limit: 10 }
 
-  const { data: reviewsData } = useQuery({
+  const { data: reviewsData, refetch: refetchReviews } = useQuery({
     queryKey: ['reviews', filters, cafe._id],
     queryFn: () => reviewAPI.getByShopId(filters, cafe._id),
   })
@@ -379,58 +403,107 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
         itemsLength={1}
         itemsPerPage={1}>
         <>
-          <ReviewForm shopId={cafe._id} />
+          {isAuthenticated && (
+            <ReviewForm
+              shopId={cafe._id}
+              review={editingReview}
+              onCancelEdit={() => setEditingReview(null)}
+              onSuccess={() => {
+                setEditingReview(null)
+                refetchReviews()
+              }}
+            />
+          )}
 
-          {reviews.length > 0 && (
-            <div className="space-y-6">
-              {reviews.map((review, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+          {reviews.map((review, idx) => {
+            const isOwner = review.user._id === user?._id
+
+            return (
+              <div
+                key={idx}
+                className="mb-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+                {/* HEADER */}
+                <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-500">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
                       <User size={20} />
                     </div>
-
-                    <div className="flex-1">
-                      <div className="flex w-full justify-between">
-                        <p className="font-bold text-gray-800">
-                          {review.user.username || '匿名ユーザー'}
-                        </p>
-                        <span className="text-sm text-gray-500">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star
-                              key={s}
-                              size={16}
-                              className={
-                                s <= review.rating
-                                  ? 'fill-[#F26546] text-[#F26546]'
-                                  : 'text-gray-200'
-                              }
-                            />
-                          ))}
-                        </div>
-                      </div>
+                    <div>
+                      <p className="font-bold">{review.user.username}</p>
+                      <span className="text-sm text-gray-500">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
 
-                  <p className="mt-4 text-gray-700">{review.content}</p>
-                  {review.images && review.images.length > 0 && (
-                    <img
-                      src={review.images[0]}
-                      alt="Review Image"
-                      className="mt-4 max-h-60 w-full rounded-lg object-cover"
-                    />
+                  {isOwner && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingReview(review)}
+                        className="cursor-pointer text-sm text-blue-500 hover:underline">
+                        <Pencil size={20} />
+                      </button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button className="cursor-pointer text-sm text-red-500 hover:underline">
+                            <Trash2 size={20} />
+                          </button>
+                        </AlertDialogTrigger>
+
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              本当にこのレビューを削除しますか？
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              この操作は取り消せません。削除すると、このレビューは完全に削除されます。
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteMutation.mutate(review._id)}>
+                              削除する
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   )}
                 </div>
-              ))}
-            </div>
-          )}
+
+                {/* RATING */}
+                <div className="mt-2 flex">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      size={16}
+                      className={
+                        s <= review.rating
+                          ? 'fill-[#F26546] text-[#F26546]'
+                          : 'text-gray-200'
+                      }
+                    />
+                  ))}
+                </div>
+
+                <p className="mt-3 text-gray-700">{review.content}</p>
+
+                {review.images && review.images.length > 0 && (
+                  <div className="mt-4 grid grid-cols-5 gap-2">
+                    {review.images.map((img, i) => (
+                      <img
+                        key={i}
+                        src={`${import.meta.env.VITE_BASE_URL_BACKEND}/images/review/${img}`}
+                        className="h-24 w-full rounded-lg object-cover"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </>
       </SectionCard>
     </div>

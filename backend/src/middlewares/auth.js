@@ -10,7 +10,8 @@ export const authMiddleware = (req, res, next) => {
   if (
     req.method === 'GET' &&
     (req.originalUrl.startsWith('/api-v1/search') ||
-      req.originalUrl.startsWith('/api-v1/shops'))
+      req.originalUrl.startsWith('/api-v1/shops') ||
+      req.originalUrl.startsWith('/api-v1/review'))
   ) {
     return next()
   }
