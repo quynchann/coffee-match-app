@@ -14,13 +14,21 @@ import {
   Star,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import SectionCard from './SectionCard'
 import FeatureItem from './FeatureItem'
-import ReviewForm from './ReviewForm'
-import type { Cafe } from '@/types/cafe'
+import { useAuthStore } from '@/stores/useAuthStore'
+import {
+  deleteFavorite,
+  getFavoriteStatus,
+  postFavorite,
+} from '@/services/favorite.api'
 
 const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
+  const { isAuthenticated } = useAuthStore()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isFavoriteStatus, setIsFavoriteStatus] = useState<boolean>(false)
+
   // const [reviews, setReviews] = useState(cafe.reviews || [])
   const [pageIndex, setPageIndex] = useState(0)
   const itemsPerPage = 4
@@ -70,6 +78,35 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
   //   }
   //   setReviews([review, ...reviews])
   // }
+
+  const handleToggleFavorite = async (id: string) => {
+    if (!isAuthenticated) {
+      toast.warning('この機能を使用するにはログインする必要があります')
+    } else {
+      if (!isFavoriteStatus) {
+        await postFavorite(id)
+        await fetchFavoriteStatus(id)
+        toast.success('お気に入りに追加しました')
+      } else {
+        await deleteFavorite(id)
+        await fetchFavoriteStatus(id)
+        toast.success('お気に入りから削除しました。')
+      }
+    }
+  }
+
+  const fetchFavoriteStatus = async (shopId: string) => {
+    if (isAuthenticated) {
+      const res = await getFavoriteStatus(shopId)
+      if (res.data.success) {
+        setIsFavoriteStatus(res.data.data ?? false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchFavoriteStatus(cafe._id)
+  }, [])
 
   // Reset image index khi đổi cafe
   useEffect(() => {
@@ -200,9 +237,17 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
             </div>
 
             <div className="flex justify-center gap-3 border-t border-gray-100 pt-4">
-              <button className="flex w-48 items-center justify-center gap-2 rounded-lg bg-[#F26546] py-3 font-bold text-white shadow-sm shadow-orange-200 transition hover:bg-[#e05535]">
-                <Bookmark size={18} /> 保存
+              <button
+                onClick={() => handleToggleFavorite(cafe._id)}
+                className={`flex w-48 items-center justify-center gap-2 rounded-lg py-3 font-bold shadow-sm transition ${
+                  isFavoriteStatus
+                    ? 'bg-[#F26546] text-white shadow-orange-200 hover:bg-[#e05535]'
+                    : 'border border-[#F26546] bg-white text-[#F26546] hover:bg-orange-50'
+                } `}>
+                <Bookmark size={18} />
+                保存
               </button>
+
               <button className="flex w-48 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 font-bold text-gray-700 transition hover:bg-gray-50">
                 <Share2 size={18} /> 共有
               </button>

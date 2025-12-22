@@ -20,9 +20,16 @@ const getAllShopsFavorite = async (params: IFavoriteParams) => {
   })
 }
 
+const getFavoriteStatus = async (shopId: string) => {
+  return await axios.get<IBackendRes<boolean>>(
+    `/favorite/${shopId}/favorite-status`,
+  )
+}
+
 export {
   getFavoriteByUserId,
   postFavorite,
   deleteFavorite,
   getAllShopsFavorite,
+  getFavoriteStatus,
 }

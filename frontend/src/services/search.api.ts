@@ -17,7 +17,7 @@ const getShopBySearch = async (params: ISearchShopParams) => {
 }
 
 const getShopById = async (id: string) => {
-  return await axios.get<IBackendRes<IShop>>('/shop', {
+  return await axios.get<IBackendRes<IShop>>('/shops', {
     params: { id },
   })
 }

@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import MainDetail from './detail/MainDetail'
+import { Route } from '@/routes/_guest/detail/$id'
 import { getShopById } from '@/services/search.api'
 
-interface DetailProp {
-  shopId: string
-}
-
-const DetailPage = ({ shopId }: DetailProp) => {
+const DetailPage = () => {
+  const { id } = Route.useParams()
   const [selectedCafe, setSelectedCafe] = useState<IShop | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -17,11 +15,9 @@ const DetailPage = ({ shopId }: DetailProp) => {
         setLoading(true)
         setError(null)
 
-        const response = await getShopById(shopId)
-        console.log('rés', response)
+        const response = await getShopById(id)
         if (response.data.success && response.data.data) {
           const shop = response.data.data
-
           setSelectedCafe(shop)
         } else {
           setError('Không thể tải thông tin cửa hàng')

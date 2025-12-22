@@ -66,9 +66,15 @@ async function findAllShopFavorite(userId, page = 1, limit = 8) {
   }
 }
 
+async function checkFavoriteStatus(user_id, shop_id) {
+  const favorite = await Favorite.findOne({ user_id, shop_id })
+  return !!favorite
+}
+
 export {
   findFavoriteByUserId,
   addFavorite,
   removeFavorite,
-  findAllShopFavorite
+  findAllShopFavorite,
+  checkFavoriteStatus
 }

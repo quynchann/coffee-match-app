@@ -11,7 +11,7 @@ const router = express.Router()
 
 router.get('/', async (req, res) => {
   res.status(200).json({
-    message: 'API is running'
+    message: 'API is running...'
   })
 })
 
@@ -19,7 +19,7 @@ router.use(authMiddleware)
 router.use('/auth', authRouter)
 router.use('/profile', profileRouter)
 router.use('/search', searchRouter)
-router.use('/shop', shopRouter)
+router.use('/shops', shopRouter)
 router.use('/favorite', favoriteRouter)
 router.use('/history', historyRouter)
 

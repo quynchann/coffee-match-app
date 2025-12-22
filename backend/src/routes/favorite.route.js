@@ -7,5 +7,9 @@ favoriteRouter.get('/', favoriteController.getFavoriteByUserId)
 favoriteRouter.post('/', favoriteController.addFavorite)
 favoriteRouter.delete('/:shopId', favoriteController.removeFavorite)
 favoriteRouter.get('/shops', favoriteController.getMyFavorites)
+favoriteRouter.get(
+  '/:shopId/favorite-status',
+  favoriteController.checkFavoriteStatus
+)
 
 export default favoriteRouter

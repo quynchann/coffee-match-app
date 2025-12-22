@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import CafeCard from '../cafe/CafeCard'
 import PaginationButton from '../pagination/PaginationButtonProps'
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -52,7 +53,10 @@ const MainContent: React.FC<MainContentProps> = ({
   const [favorites, setFavorites] = useState<Array<string>>([]) // Lưu mảng shop_id đã thích
   const { user } = useAuthStore()
   const handleToggle = async (shopId: string) => {
-    if (!user) return
+    if (!user) {
+      toast.warning('この機能を使用するにはログインする必要があります')
+      return
+    }
     const isFav = favorites.includes(shopId)
     const previousFavorites = [...favorites]
 

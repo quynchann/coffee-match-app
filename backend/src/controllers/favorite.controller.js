@@ -76,6 +76,8 @@ async function removeFavorite(req, res) {
 async function getMyFavorites(req, res) {
   try {
     const userId = req.user.id
+    console.log('userId', userId)
+
     const { page, limit } = req.query
 
     const response = await favoriteService.handleGetAllShopFavorite(
@@ -99,9 +101,35 @@ async function getMyFavorites(req, res) {
   }
 }
 
+async function checkFavoriteStatus(req, res) {
+  try {
+    const userId = req.user.id
+    console.log('userId', userId)
+    const { shopId } = req.params
+
+    const response = await favoriteService.handleCheckFavoriteStatus(
+      userId,
+      shopId
+    )
+
+    return res.status(200).json({
+      success: true,
+      data: response
+    })
+  } catch (error) {
+    console.error('favoriteService error:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy trạng thái yêu thích',
+      error: error.message
+    })
+  }
+}
+
 export default {
   getFavoriteByUserId,
   addFavorite,
   removeFavorite,
-  getMyFavorites
+  getMyFavorites,
+  checkFavoriteStatus
 }
