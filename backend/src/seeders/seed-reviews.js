@@ -52,7 +52,10 @@ const seedReviews = async () => {
     }
 
     if (reviewsToInsert.length > 0) {
-      await Review.insertMany(reviewsToInsert)
+      for (const review of reviewsToInsert) {
+        const newReview = new Review(review)
+        await newReview.save() // Sử dụng .save() để kích hoạt hook post('save')
+      }
       console.log(`${reviewsToInsert.length} Reviews added`)
 
       // Lưu ý: Vì ReviewSchema có hook post('save') để cập nhật lại Shop rating,
