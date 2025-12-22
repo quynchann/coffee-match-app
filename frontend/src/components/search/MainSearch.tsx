@@ -63,9 +63,11 @@ const MainContent: React.FC<MainContentProps> = ({
     try {
       if (isFav) {
         setFavorites((prev) => prev.filter((id) => id !== shopId))
+        toast.success('お気に入りから削除しました')
         await deleteFavorite(shopId)
       } else {
         setFavorites((prev) => [...prev, shopId])
+        toast.success('お気に入りに追加しました')
         await postFavorite(shopId)
       }
     } catch (error) {
@@ -154,7 +156,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={handlePrev}
             disabled={currentPage === 1}
-            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50">
+            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-50">
             <ChevronLeft size={18} />
           </button>
 
@@ -170,7 +172,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50">
+            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-50">
             <ChevronRight size={18} />
           </button>
         </div>

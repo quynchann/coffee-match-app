@@ -5,8 +5,6 @@ export async function createReview(req, res, next) {
     const { user_id, shop_id, rating, content } = req.body
     const images = req.files || []
 
-    console.log('req.body', req.body, 'images ', images)
-
     const newReview = await reviewService.createReview({
       user_id,
       shop_id,

@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { useAuthStore } from '../../stores/useAuthStore'
+import { Button } from '../ui/button'
 import type { Review } from '@/types/review'
 import { reviewAPI } from '@/services/review.api'
 
@@ -145,9 +146,9 @@ export default function ReviewForm({
     } catch (err) {
       if (err instanceof z.ZodError) {
         const newErrors: ReviewErrors = {}
-        err.issues.forEach((e) => {
-          const key = e.path[0] as keyof ReviewErrors
-          newErrors[key] = e.message
+        err.issues.forEach((error) => {
+          const key = error.path[0] as keyof ReviewErrors
+          newErrors[key] = error.message
         })
         setErrors(newErrors)
       }
@@ -220,7 +221,7 @@ export default function ReviewForm({
               <User size={24} />
             </div>
             <div>
-              <span className="block text-sm font-bold">{user?.username}</span>
+              <span className="block font-bold">{user?.username}</span>
               <span className="text-xs text-gray-500">レビューを書く</span>
             </div>
           </div>
@@ -231,7 +232,7 @@ export default function ReviewForm({
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star
                   key={s}
-                  size={28}
+                  size={20}
                   className={`cursor-pointer ${
                     s <= (hoverRating || formData.rating)
                       ? 'fill-[#F26546] text-[#F26546]'
@@ -251,6 +252,7 @@ export default function ReviewForm({
 
         {/* CONTENT */}
         <textarea
+          name="content"
           value={formData.content}
           onChange={(e) =>
             setFormData((p) => ({ ...p, content: e.target.value }))
@@ -301,22 +303,23 @@ export default function ReviewForm({
 
         {/* SUBMIT */}
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-end gap-2">
           {review && (
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={handleCancel}
-              className="rounded-lg border px-6 py-2">
+              className="px-6">
               キャンセル
-            </button>
+            </Button>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={createMutation.isPending || updateMutation.isPending}
-            className="rounded-lg bg-[#F26546] px-8 py-2 font-bold text-white">
+            className="bg-[#F26546] px-8 font-bold text-white hover:bg-[#F26546]/80 disabled:opacity-50">
             {review ? '更新' : '送信'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

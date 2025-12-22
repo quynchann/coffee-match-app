@@ -1,5 +1,4 @@
 import axios from './axios.customize'
-import type { Shop } from '../types/shop'
 
 const getAmenities = async () => {
   return await axios.get<IBackendRes<Array<string>>>('/search/amenities')
