@@ -83,7 +83,7 @@ const CafeCard: React.FC<{
             e.stopPropagation()
             handleToggle(data._id)
           }}
-          className={`absolute top-2 right-2 rounded-full p-1 shadow-sm transition ${
+          className={`absolute top-2 right-2 cursor-pointer rounded-full p-1 shadow-sm transition hover:scale-110 ${
             isFavorite ? 'bg-white text-[#F26546]' : 'bg-white text-gray-400'
           }`}>
           <Bookmark size={16} fill={isFavorite ? '#F26546' : 'white'} />
@@ -96,10 +96,10 @@ const CafeCard: React.FC<{
             {data.name}
           </h3>
           <div className="flex shrink-0 items-center gap-1">
-            <span className="text-lg font-bold text-gray-700">
+            <span className="text-sm font-bold text-gray-700">
               {data.rating}
             </span>
-            <Star size={16} className="text-[#F26546]" fill="#F26546" />
+            <Star size={14} className="text-[#F26546]" fill="#F26546" />
           </div>
         </div>
 

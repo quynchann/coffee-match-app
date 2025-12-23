@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import CafeCard from '../cafe/CafeCard'
 import PaginationButton from '../pagination/PaginationButtonProps'
+import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/useAuthStore'
 import {
   deleteFavorite,
@@ -63,9 +64,11 @@ const MainContent: React.FC<MainContentProps> = ({
     try {
       if (isFav) {
         setFavorites((prev) => prev.filter((id) => id !== shopId))
+        toast.success('お気に入りから削除しました')
         await deleteFavorite(shopId)
       } else {
         setFavorites((prev) => [...prev, shopId])
+        toast.success('お気に入りに追加しました')
         await postFavorite(shopId)
       }
     } catch (error) {
@@ -96,24 +99,26 @@ const MainContent: React.FC<MainContentProps> = ({
       <div className="mb-6 flex flex-col items-center justify-between gap-4 rounded bg-[#D9D9D9] p-3 sm:flex-row sm:justify-start sm:gap-0">
         <span className="mr-6 text-lg font-bold text-gray-700">並び替え</span>
         <div className="flex w-full gap-4 sm:w-auto sm:gap-8">
-          <button
+          <Button
+            size="sm"
             onClick={() => onSortChange('distance')}
-            className={`flex-1 rounded px-8 py-1.5 text-sm font-bold transition sm:flex-none ${
+            className={`flex-1 rounded px-8 text-sm font-bold transition sm:flex-none ${
               sortBy === 'distance'
                 ? 'bg-[#ff6347] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
             距離
-          </button>
-          <button
+          </Button>
+          <Button
+            size="sm"
             onClick={() => onSortChange('rating')}
-            className={`flex-1 rounded px-8 py-1.5 text-sm font-bold transition sm:flex-none ${
+            className={`flex-1 rounded px-8 text-sm font-bold transition sm:flex-none ${
               sortBy === 'rating'
                 ? 'bg-[#ff6347] text-white'
                 : 'bg-[#444] text-white hover:bg-[#555]'
             }`}>
             評価
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -154,7 +159,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={handlePrev}
             disabled={currentPage === 1}
-            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50">
+            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-50">
             <ChevronLeft size={18} />
           </button>
 
@@ -170,7 +175,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50">
+            className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-50">
             <ChevronRight size={18} />
           </button>
         </div>

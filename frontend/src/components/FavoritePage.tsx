@@ -88,7 +88,7 @@ const FavoritePage = () => {
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 hover:bg-gray-100 disabled:opacity-50">
+                    className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50">
                     <ChevronLeft size={18} />
                   </button>
 
@@ -111,7 +111,7 @@ const FavoritePage = () => {
                       setCurrentPage((p) => Math.min(totalPages, p + 1))
                     }
                     disabled={currentPage === totalPages}
-                    className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 hover:bg-gray-100 disabled:opacity-50">
+                    className="cursor-pointer rounded-md border border-gray-200 p-2 text-gray-500 hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50">
                     <ChevronRight size={18} />
                   </button>
                 </div>

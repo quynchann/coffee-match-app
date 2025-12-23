@@ -1,5 +1,5 @@
-import { Check, ChevronDown, ChevronUp } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 interface DropdownOption {
   id: string
@@ -11,7 +11,6 @@ interface FilterDropdownProps {
   options: Array<DropdownOption>
   selectedId: string | null
   onSelect: (id: string | null) => void
-  placeholder: string
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({
@@ -19,7 +18,6 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   options,
   selectedId,
   onSelect,
-  placeholder,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -41,28 +39,26 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const selectedOption = options.find((opt) => opt.id === selectedId)
 
   return (
-    <div className="relative group" ref={dropdownRef}>
+    <div className="group relative" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full py-3 px-4 rounded flex justify-between items-center shadow-md transition
-          ${isOpen ? 'bg-[#333] text-white' : 'bg-[#111] text-white hover:bg-black'}
-        `}>
-        <span className="font-bold truncate pr-2">
+        className={`flex w-full cursor-pointer items-center justify-between rounded px-4 py-3 shadow-md transition ${isOpen ? 'bg-[#333] text-white' : 'bg-black text-white hover:bg-[#222]'} `}>
+        <span className="truncate pr-2 font-bold">
           {selectedOption ? selectedOption.label : title}
         </span>
         {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-md shadow-xl border border-gray-200 z-20 overflow-hidden max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 z-20 mt-2 max-h-64 w-full overflow-hidden overflow-y-auto rounded-md border border-gray-200 bg-white shadow-xl">
           <button
             type="button"
             onClick={() => {
               onSelect(null)
               setIsOpen(false)
             }}
-            className="w-full text-left px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 border-b border-gray-100 font-medium">
+            className="w-full cursor-pointer border-b border-gray-100 px-4 py-3 text-left text-sm font-medium text-gray-500 hover:bg-gray-100">
             -- すべて / リセット --
           </button>
 
@@ -74,9 +70,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                 onSelect(opt.id)
                 setIsOpen(false)
               }}
-              className={`w-full text-left px-4 py-3 text-sm flex justify-between items-center hover:bg-gray-50 transition
-                ${selectedId === opt.id ? 'text-[#F26546] font-bold bg-orange-50' : 'text-gray-700'}
-              `}>
+              className={`flex w-full cursor-pointer items-center justify-between px-4 py-3 text-left text-sm transition hover:bg-gray-100 ${selectedId === opt.id ? 'bg-orange-50 font-bold text-[#F26546]' : 'text-gray-700'} `}>
               <span className="font-bold">{opt.label}</span>
               {selectedId === opt.id && <Check size={16} />}
             </button>

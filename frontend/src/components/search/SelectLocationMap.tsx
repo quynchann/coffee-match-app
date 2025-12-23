@@ -8,6 +8,7 @@ import {
 } from 'react-leaflet'
 import L from 'leaflet'
 import { useState } from 'react'
+import { X } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
@@ -93,28 +94,26 @@ export default function SelectLocationMap({ onConfirm, onClose }: Props) {
   return (
     <div className="relative">
       <Button
-        variant="outline"
+        variant="icon"
         onClick={onClose}
-        className="absolute top-2 right-2 z-[1000] rounded-full p-2 text-gray-600 hover:bg-gray-100"
+        className="absolute top-2 right-2 z-1000 rounded-full p-2 text-gray-600"
         aria-label="close">
-        ✕
+        <X />
       </Button>
-      <div className="flex gap-2 p-4" style={{ marginBottom: 8 }}>
+
+      <div className="flex gap-3 p-4">
         <Input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="住所を入力してください（例：渋谷区）"
-          style={{ width: 300, marginRight: 8 }}
+          className="w-75"
         />
         <Button variant="blue" onClick={searchAddress}>
           検索
         </Button>
       </div>
 
-      <MapContainer
-        center={[21.03, 105.85]}
-        zoom={13}
-        style={{ height: 400, width: '100%' }}>
+      <MapContainer center={[21.03, 105.85]} zoom={13} className="h-100 w-full">
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         <MapController position={position} setPosition={setPosition} />
@@ -130,7 +129,6 @@ export default function SelectLocationMap({ onConfirm, onClose }: Props) {
 
       <div className="p-4">
         <Button
-          className="my-4"
           variant="primary"
           disabled={!position}
           onClick={() =>

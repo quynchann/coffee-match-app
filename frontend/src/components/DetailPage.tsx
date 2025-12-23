@@ -1,40 +1,55 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuthStore } from '../stores/useAuthStore'
 import MainDetail from './detail/MainDetail'
-import { Route } from '@/routes/_guest/detail/$id'
 import { getShopById } from '@/services/search.api'
+import { historyAPI } from '@/services/history.api'
+import { Route } from '@/routes/_guest/detail/$id'
 
-const DetailPage = () => {
-  const { id } = Route.useParams()
+export default function DetailPage() {
+  const { user } = useAuthStore()
+  const queryClient = useQueryClient()
+  const { id } = Route.useParams() // shop ID from URL params
+
   const [selectedCafe, setSelectedCafe] = useState<IShop | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+
+  const loggedHistoryRef = useRef<string | number | null>(null)
+
+  const {
+    data: shopData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['shop', id],
+    queryFn: () => getShopById(id).then((res) => res.data.data),
+    enabled: !!id,
+  })
+
+  const createHistoryMutation = useMutation({
+    mutationFn: ({ userId }: { userId: string }) =>
+      historyAPI.create(userId, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['history'] })
+    },
+  })
 
   useEffect(() => {
-    const fetchShopDetail = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const response = await getShopById(id)
-        if (response.data.success && response.data.data) {
-          const shop = response.data.data
-          setSelectedCafe(shop)
-        } else {
-          setError('Không thể tải thông tin cửa hàng')
-        }
-      } catch (err) {
-        console.error('Error fetching shop detail:', err)
-        setError('Lỗi khi tải dữ liệu')
-      } finally {
-        setLoading(false)
-      }
+    if (shopData) {
+      setSelectedCafe(shopData)
     }
 
-    fetchShopDetail()
-  }, [])
+    if (user?._id && loggedHistoryRef.current !== id) {
+      createHistoryMutation.mutate({
+        userId: user._id,
+      })
 
-  if (loading) {
+      // Mark this shop ID as logged to prevent duplicate history entries
+      loggedHistoryRef.current = id
+    }
+  }, [shopData])
+
+  if (isLoading) {
     return (
       <div className="flex min-h-[80vh] flex-col items-center justify-center">
         <Loader2 className="size-10 animate-spin text-[#FF6347]" />
@@ -43,7 +58,7 @@ const DetailPage = () => {
     )
   }
 
-  if (error || !selectedCafe) {
+  if (isError || !selectedCafe) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
         <div className="text-center text-[#ff6347]">
@@ -60,5 +75,3 @@ const DetailPage = () => {
     </div>
   )
 }
-
-export default DetailPage

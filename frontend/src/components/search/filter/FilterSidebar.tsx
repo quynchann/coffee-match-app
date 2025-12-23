@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import FilterDropdown from './FilterDropdown'
+import { Button } from '@/components/ui/button'
 import { getAmenities, getAreas, getPurposes } from '@/services/search.api'
 
 // Bảng tra cứu Tiếng Nhật cho các ID từ Backend
@@ -62,8 +63,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   setPriceApplied,
 }) => {
   const [areas, setAreas] = useState<Array<{ id: string; label: string }>>([])
-  const [purposes, setPurposes] = useState<Array<{ id: string; label: string }>>([])
-  const [amenities, setAmenities] = useState<Array<{ id: string; label: string }>>([])
+  const [purposes, setPurposes] = useState<
+    Array<{ id: string; label: string }>
+  >([])
+  const [amenities, setAmenities] = useState<
+    Array<{ id: string; label: string }>
+  >([])
 
   useEffect(() => {
     const fetchFilterOptions = async () => {
@@ -76,29 +81,36 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
         // Chuyển đổi Area code sang Tiếng Nhật dựa trên AREA_MAP
         if (areasRes.data.success && Array.isArray(areasRes.data.data)) {
-          setAreas(areasRes.data.data.map((id: string) => ({
-            id,
-            label: AREA_MAP[id] || id // Hiển thị tiếng Nhật, nếu không tìm thấy thì hiện ID gốc
-          })))
+          setAreas(
+            areasRes.data.data.map((id: string) => ({
+              id,
+              label: AREA_MAP[id] || id, // Hiển thị tiếng Nhật, nếu không tìm thấy thì hiện ID gốc
+            })),
+          )
         }
 
         // Chuyển đổi Purpose code sang Tiếng Nhật dựa trên PURPOSE_MAP
         if (purposesRes.data.success && Array.isArray(purposesRes.data.data)) {
-          setPurposes(purposesRes.data.data.map((id: string) => ({
-            id,
-            label: PURPOSE_MAP[id] || id
-          })))
+          setPurposes(
+            purposesRes.data.data.map((id: string) => ({
+              id,
+              label: PURPOSE_MAP[id] || id,
+            })),
+          )
         }
 
         // Lọc bỏ null và chuyển đổi sang Tiếng Nhật dựa trên AMENITY_MAP
-        if (amenitiesRes.data.success && Array.isArray(amenitiesRes.data.data)) {
+        if (
+          amenitiesRes.data.success &&
+          Array.isArray(amenitiesRes.data.data)
+        ) {
           setAmenities(
             amenitiesRes.data.data
               .filter((id: string | null) => id !== null)
               .map((id: string) => ({
                 id,
-                label: AMENITY_MAP[id] || id
-              }))
+                label: AMENITY_MAP[id] || id,
+              })),
           )
         }
       } catch (err) {
@@ -114,7 +126,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* Dropdown Khu vực */}
       <FilterDropdown
         title="場所"
-        placeholder="場所を選択"
         options={areas}
         selectedId={filters.area}
         onSelect={(id) => setFilters((prev) => ({ ...prev, area: id }))}
@@ -123,7 +134,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* Dropdown Mục đích */}
       <FilterDropdown
         title="目的"
-        placeholder="目的を選択"
         options={purposes}
         selectedId={filters.purpose}
         onSelect={(id) => setFilters((prev) => ({ ...prev, purpose: id }))}
@@ -137,7 +147,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
         <div className="mb-4 flex items-center gap-2">
           <div className="relative flex-1">
-            <span className="absolute top-2 right-1 text-[10px] text-gray-500">VND</span>
+            <span className="absolute top-2 right-1 text-xs text-gray-500">
+              円
+            </span>
             <input
               type="text"
               placeholder="Min"
@@ -151,7 +163,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
           <span className="text-gray-500">~</span>
           <div className="relative flex-1">
-            <span className="absolute top-2 right-1 text-[10px] text-gray-500">VND</span>
+            <span className="absolute top-2 right-1 text-xs text-gray-500">
+              円
+            </span>
             <input
               type="text"
               placeholder="Max"
@@ -165,23 +179,25 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
         </div>
 
-        <button
+        <Button
+          size="lg"
           type="button"
           onClick={onApplyPrice}
-          className={`mb-6 w-full rounded py-2 font-bold text-white shadow-sm transition ${
+          className={`mb-6 w-full rounded font-bold transition hover:bg-[#ff6347]/90 ${
             priceApplied
-              ? 'bg-[#e85f2f] shadow-md ring-2 ring-[#f26546]/40'
+              ? 'bg-[#e85f2f] shadow-md ring-2'
               : 'bg-[#ff6347] hover:opacity-90'
           }`}>
           適用
-        </button>
+        </Button>
 
         {/* Danh sách các tiện ích */}
         <div className="grid grid-cols-1 gap-2">
           {amenities.map((amenity) => {
             const isActive = filters.amenities.includes(amenity.id)
             return (
-              <button
+              <Button
+                size="lg"
                 key={amenity.id}
                 type="button"
                 onClick={() => {
@@ -195,13 +211,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     }
                   })
                 }}
-                className={`flex w-full items-center justify-center gap-2 rounded border px-4 py-2.5 text-sm font-bold transition ${
+                className={`rounded font-bold transition ${
                   isActive
-                    ? 'border-[#F26546] bg-[#F26546] text-white shadow-sm'
+                    ? 'border-[#F26546] bg-[#F26546] text-white shadow-sm hover:bg-[#ff6347]/90'
                     : 'border-[#444444] bg-[#444444] text-white hover:bg-[#555]'
                 }`}>
                 {amenity.label}
-              </button>
+              </Button>
             )
           })}
         </div>

@@ -23,6 +23,7 @@ import ReviewForm from './ReviewForm'
 import SectionCard from './SectionCard'
 import FeatureItem from './FeatureItem'
 import type { Review } from '@/types/review'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { reviewAPI } from '@/services/review.api'
 import {
@@ -60,56 +61,6 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
     onError: () => toast.error('削除に失敗しました'),
   })
 
-  // const [reviews, setReviews] = useState(cafe.reviews || [])
-  const [pageIndex, setPageIndex] = useState(0)
-  const itemsPerPage = 4
-  const totalPages = Math.max(1, Math.ceil(cafe.features.length / itemsPerPage))
-
-  const [menuPageIndex, setMenuPageIndex] = useState(0)
-  const menuItemsPerPage = 6
-  const menuTotalPages = Math.max(
-    1,
-    Math.ceil(cafe.menu.length / menuItemsPerPage),
-  )
-
-  const [thumbPageIndex, setThumbPageIndex] = useState(0)
-  const thumbItemsPerPage = 6
-  const thumbTotalPages = Math.max(
-    1,
-    Math.ceil(cafe.images.length / thumbItemsPerPage),
-  )
-
-  const goPrev = () => setPageIndex((p) => (p - 1 + totalPages) % totalPages)
-  const goNext = () => setPageIndex((p) => (p + 1) % totalPages)
-
-  const goPrevMenu = () =>
-    setMenuPageIndex((p) => (p - 1 + menuTotalPages) % menuTotalPages)
-  const goNextMenu = () => setMenuPageIndex((p) => (p + 1) % menuTotalPages)
-
-  const goPrevThumb = () =>
-    setThumbPageIndex((p) => (p - 1 + thumbTotalPages) % thumbTotalPages)
-  const goNextThumb = () => setThumbPageIndex((p) => (p + 1) % thumbTotalPages)
-
-  // const handleAddReview = (newReview: {
-  //   rating: number
-  //   content: string
-  //   image?: string
-  // }) => {
-  //   const review = {
-  //     id: reviews.length + 1,
-  //     user: 'User Name',
-  //     date: new Date().toLocaleDateString('ja-JP', {
-  //       year: 'numeric',
-  //       month: '2-digit',
-  //       day: '2-digit',
-  //     }),
-  //     rating: newReview.rating,
-  //     content: newReview.content,
-  //     image: newReview.image,
-  //   }
-  //   setReviews([review, ...reviews])
-  // }
-
   const handleToggleFavorite = async (id: string) => {
     if (!isAuthenticated) {
       toast.warning('この機能を使用するにはログインする必要があります')
@@ -117,11 +68,11 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
       if (!isFavoriteStatus) {
         await postFavorite(id)
         await fetchFavoriteStatus(id)
-        toast.success('お気に入りに追加しました')
+        toast.success('お気に入りに追加しました', { id: 'favorite' })
       } else {
         await deleteFavorite(id)
         await fetchFavoriteStatus(id)
-        toast.success('お気に入りから削除しました。')
+        toast.success('お気に入りから削除しました。', { id: 'favorite' })
       }
     }
   }
@@ -142,12 +93,9 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
   // Reset image index khi đổi cafe
   useEffect(() => {
     setCurrentImageIndex(0)
-    setPageIndex(0)
-    setMenuPageIndex(0)
-    setThumbPageIndex(0)
   }, [cafe._id])
 
-  const filters = { page: 1, limit: 10 }
+  const filters = { page: 1, limit: 10000 }
 
   const { data: reviewsData, refetch: refetchReviews } = useQuery({
     queryKey: ['reviews', filters, cafe._id],
@@ -262,7 +210,7 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
               <div className="flex items-center gap-3 rounded p-2 transition hover:bg-gray-50">
                 <DollarSign size={20} className="text-[#F26546]" />
                 <span className="font-medium">
-                  {cafe.priceRange.min} ~ {cafe.priceRange.max}
+                  {cafe.priceRange.min} 円 ~ {cafe.priceRange.max} 円
                 </span>
               </div>
               <div className="flex items-center gap-3 rounded p-2 transition hover:bg-gray-50">
@@ -280,20 +228,20 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
             </div>
 
             <div className="flex justify-center gap-3 border-t border-gray-100 pt-4">
-              <button
+              <Button
                 onClick={() => handleToggleFavorite(cafe._id)}
-                className={`flex w-48 items-center justify-center gap-2 rounded-lg py-3 font-bold shadow-sm transition ${
+                className={`h-12 w-48 font-bold transition ${
                   isFavoriteStatus
                     ? 'bg-[#F26546] text-white shadow-orange-200 hover:bg-[#e05535]'
                     : 'border border-[#F26546] bg-white text-[#F26546] hover:bg-orange-50'
                 } `}>
                 <Bookmark size={18} />
-                保存
-              </button>
+                {isFavoriteStatus ? ' お気に入り解除' : ' お気に入り追加'}
+              </Button>
 
-              <button className="flex w-48 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 font-bold text-gray-700 transition hover:bg-gray-50">
+              <Button variant="outline" className="h-12 w-48 font-bold">
                 <Share2 size={18} /> 共有
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -372,7 +320,7 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
                     <div className="group flex h-full flex-col rounded-lg border border-gray-100 bg-white p-2 transition hover:border-[#F26546]/50">
                       <div className="relative mb-2 flex aspect-video items-center justify-center overflow-hidden rounded-md">
                         <Badge className="absolute top-2 right-2 bg-[#F26546]">
-                          {item.price}
+                          {item.price} 円
                         </Badge>
 
                         {item.image ? (
@@ -437,17 +385,22 @@ const MainDetail: React.FC<{ cafe: IShop }> = ({ cafe }) => {
                   </div>
 
                   {isOwner && (
-                    <div className="flex gap-2">
-                      <button
+                    <div>
+                      <Button
+                        variant="icon"
+                        size="icon"
                         onClick={() => setEditingReview(review)}
-                        className="cursor-pointer text-sm text-blue-500 hover:underline">
+                        className="text-sm text-blue-500 hover:text-blue-700">
                         <Pencil size={20} />
-                      </button>
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <button className="cursor-pointer text-sm text-red-500 hover:underline">
+                          <Button
+                            variant="icon"
+                            size="icon"
+                            className="text-sm text-red-500 hover:text-red-700">
                             <Trash2 size={20} />
-                          </button>
+                          </Button>
                         </AlertDialogTrigger>
 
                         <AlertDialogContent>
