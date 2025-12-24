@@ -47,6 +47,7 @@ export const useLocationStore = create<LocationState>()(
           },
           (err) => {
             console.error('Lỗi lấy vị trí:', err)
+            alert('位置情報へのアクセスを許可してください。')
 
             // chỉ set mặc định nếu chưa có location
             if (!get().userLocation) {
