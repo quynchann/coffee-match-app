@@ -70,7 +70,6 @@ export default function ProfilePage() {
       }
 
       const res = await updateProfile(formData)
-      console.log('res', res)
 
       if (res.data.success) {
         toast.success('正常に編集されました', {
@@ -113,7 +112,6 @@ export default function ProfilePage() {
         toast.error(res.data.message || 'エラーが発生しました！')
       }
     } catch (err: any) {
-      console.log('error', err.response?.data || err)
       toast.error(
         err.response?.data?.message || 'サーバーエラーが発生しました！',
       )
