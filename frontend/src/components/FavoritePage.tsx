@@ -10,7 +10,7 @@ const FavoritePage = () => {
   const [favoriteShops, setFavoriteShops] = useState<Array<IShop>>([])
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [userLocation, setUserLocation] = useState<{
+  const [userLocation] = useState<{
     lat: number
     lng: number
   } | null>(null)
